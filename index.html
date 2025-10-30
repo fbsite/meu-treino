@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano Performance - Fábio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <!-- Carregar o plugin de anotações do Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.4.0/chartjs-plugin-annotation.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-gray-900 { background-color: #111827; }
+        .bg-gray-800 { background-color: #1F2937; }
+        .bg-gray-700 { background-color: #374151; }
+        .border-gray-700 { border-color: #374151; }
+        .text-cyan-400 { color: #22D3EE; }
+        .text-cyan-500 { color: #06B6D4; }
+        .text-cyan-600 { color: #0891B2; }
+        .text-cyan-700 { color: #0E7490; }
+        .bg-cyan-500 { background-color: #06B6D4; }
+        .bg-cyan-600 { background-color: #0891B2; }
+        .bg-cyan-700 { background-color: #0E7490; }
+        .text-amber-400 { color: #FBBF24; }
+        .text-amber-300 { color: #FCD34D; }
+        .text-green-400 { color: #34D399; }
+        .bg-green-500 { background-color: #10B981; }
+        .bg-green-900\/50 { background-color: rgba(6, 78, 59, 0.5); }
+        .border-green-700 { border-color: #047857;}
+        .border-green-500 { border-color: #10B981;}
+        .animate-pulse { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
+        /* Estilos para dropdown */
+        .dropdown-content { display: none; }
+        .dropdown-content.show { display: block; }
+        /* Estilos adicionais */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] { -moz-appearance: textfield; }
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        /* Modal Styles */
+        .modal { display: none; }
+        .modal.show { display: flex; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white p-4">
+    <div class="max-w-2xl mx-auto">
+        <!-- Cabeçalho -->
+        <header class="text-center mb-6">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400 lucide lucide-dumbbell"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m6 2 4 4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/><path d="M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0"/></svg>
+                <h1 class="text-3xl font-bold">Plano Performance</h1>
+            </div>
+            <p id="daily-quote" class="text-gray-400 italic">Carregando citação...</p>
+        </header>
+
+        <!-- Progresso Total -->
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6">
+            <h3 class="text-lg font-bold text-cyan-400 mb-2">Progresso Total (Novo Ciclo)</h3>
+            <div class="flex justify-between items-center mb-1">
+                <span id="completed-workouts-text" class="text-sm">0/48 treinos</span>
+                <span id="total-progress-percent" class="text-sm font-bold">0%</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-4 mb-3">
+                <div id="total-progress-bar" class="bg-cyan-500 h-4 rounded-full" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between text-xs text-gray-400">
+                <div class="flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                    <span>Início: <span id="plan-start-date">27/10/2025</span></span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flag"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+                    <span>Fim Previsto: <span id="plan-end-date">22/12/2025</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegação por Abas -->
+        <div class="flex bg-gray-800 rounded-lg p-1 mb-6">
+            <button data-view="treino" class="view-tab w-1/3 py-2 rounded-md font-bold bg-cyan-600">Treino</button>
+            <button data-view="dieta" class="view-tab w-1/3 py-2 rounded-md font-bold bg-transparent">Dieta</button>
+            <button data-view="progresso" class="view-tab w-1/3 py-2 rounded-md font-bold bg-transparent">Progresso</button>
+        </div>
+
+        <!-- Conteúdo das Abas -->
+        <div id="view-content">
+            <!-- Aba Treino (será preenchida pelo JS) -->
+            <div id="treino-view" class="view active-view">
+                <!-- Dropdown de Seleção de Treino -->
+                <div class="mb-6 relative">
+                    <button id="workout-select-button" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-left flex justify-between items-center">
+                        <span id="selected-workout-text" class="truncate">Carregando treino...</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 lucide lucide-chevrons-up-down"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                    </button>
+                    <div id="workout-dropdown" class="dropdown-content absolute top-full left-0 right-0 bg-gray-800 border border-gray-700 mt-1 rounded-lg z-10 shadow-lg max-h-60 overflow-y-auto">
+                        <!-- Opções preenchidas pelo JS -->
+                    </div>
+                </div>
+                <!-- Calendário Semanal -->
+                <div id="weekly-calendar" class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6">
+                    <h3 class="text-lg font-bold text-cyan-400 mb-3">Resumo da Semana</h3>
+                    <div class="grid grid-cols-7 gap-2 text-center" id="calendar-days">
+                        <!-- Dias preenchidos pelo JS -->
+                    </div>
+                </div>
+                 <!-- Aquecimento -->
+                 <div id="warmup-section" class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6"></div>
+                 <!-- Container do Treino do Dia -->
+                 <div id="workout-day-content"></div>
+            </div>
+
+            <!-- Aba Dieta -->
+            <div id="dieta-view" class="view hidden">
+                 <!-- Conteúdo da dieta preenchido pelo JS -->
+            </div>
+
+            <!-- Aba Progresso -->
+            <div id="progresso-view" class="view hidden">
+                 <!-- Conteúdo do progresso preenchido pelo JS -->
+            </div>
+        </div>
+
+         <!-- Timer Modal -->
+         <div id="timer-modal" class="modal fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-2xl p-8 text-center flex flex-col items-center shadow-2xl border border-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400 mb-4 lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <h3 class="text-xl font-bold text-white mb-2">Tempo de Descanso</h3>
+                <p id="timer-time" class="text-7xl font-mono font-bold text-white my-4">0:00</p>
+                <button id="timer-stop-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg flex items-center">
+                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg> Parar
+                </button>
+            </div>
+        </div>
+
+        <!-- Image Modal -->
+        <div id="image-modal" class="modal fixed inset-0 bg-black bg-opacity-80 items-center justify-center z-50">
+             <div class="relative p-4">
+                 <button id="image-modal-close" class="absolute -top-4 -right-4 bg-white rounded-full p-1 text-black">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                 </button>
+                 <img id="modal-image-element" src="" alt="Exercício ampliado" class="max-w-[90vw] max-h-[80vh] rounded-lg" />
+             </div>
+         </div>
+
+        <!-- Rodapé -->
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>Criado para o seu sucesso. Força e honra.</p>
+        </footer>
+    </div>
+
+    <!-- Script Principal -->
+    <script>
+        // --- CONSTANTES E DADOS GLOBAIS ---
+        const initialWorkouts = [ // Novo Plano de Treino (PPL Modificado)
+            { id: 'push_forca', day: 'Segunda-feira', name: 'Push (Força)', exercises: [
+                { name: 'Supino Inclinado Barra', sets: 4, reps: '6-8', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Barbell-Bench-Press.gif', technique: 'Progressão de carga' },
+                { name: 'Desenvolvimento Halteres (sentado)', sets: 4, reps: '8-10', rest: 75, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Dumbbell-Shoulder-Press.gif' },
+                { name: 'Paralelas (foco peito/tríceps)', sets: 3, reps: 'Até a falha', rest: 75, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dip.gif', technique: 'Inclinar tronco para peito' },
+                { name: 'Elevação Lateral Polia Baixa', sets: 4, reps: '10-12', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Lateral-Raise.gif' },
+                { name: 'Tríceps Testa Barra EZ', sets: 3, reps: '8-10', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Skullcrusher.gif' },
+                { name: 'Tríceps Francês Corda (atrás cabeça)', sets: 3, reps: '12-15', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Overhead-Triceps-Extension.gif' },
+            ]},
+            { id: 'pull_largura_volume', day: 'Terça-feira', name: 'Pull (Largura/Volume)', exercises: [
+                { name: 'Remada Curvada Pegada Pronada', sets: 4, reps: '8-10', rest: 75, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bent-Over-Row.gif' },
+                { name: 'Puxada Alta Frente Aberta', sets: 4, reps: '10-12', rest: 75, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif' },
+                { name: 'Serrote Halter', sets: 3, reps: '10-12 (cada)', rest: 60, image: 'https://gymvisual.com/img/p/1/7/4/3/9/17439.gif' },
+                { name: 'Pull Around (Polia Alta)', sets: 3, reps: '15', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Straight-Arm-Pulldown.gif', technique: 'Foco na dorsal, alongar bem' },
+                { name: 'Rosca Inclinada Halteres', sets: 4, reps: '10-12', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Dumbbell-Curl.gif' },
+                { name: 'Rosca Martelo Corda (Polia Baixa)', sets: 3, reps: '12-15 + Drop', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Hammer-Curl.gif', technique: 'Drop Set na última série' },
+            ]},
+            { id: 'legs_quads_forca', day: 'Quarta-feira', name: 'Legs (Quadríceps/Força)', exercises: [
+                { name: 'Agachamento Frontal', sets: 4, reps: '6-8', rest: 120, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Front-Squat.gif', technique: 'Progressão de carga' },
+                { name: 'Leg Press Pés Baixos', sets: 4, reps: '10-12', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/03/Leg-Press.gif', technique: 'Foco no quadríceps' },
+                { name: 'Cadeira Extensora', sets: 4, reps: '12-15', rest: 60, image: 'https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/cadeira-extensora.gif', technique: 'Pico de contração 2 seg' },
+                { name: 'Panturrilha Leg Press', sets: 5, reps: '15-20', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Calf-Press-on-Leg-Press.gif' },
+                { name: 'Abdominal Roda (Ab Wheel)', sets: 4, reps: 'Até a falha', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Ab-Roller.gif' },
+            ]},
+            { id: 'push_hipertrofia', day: 'Quinta-feira', name: 'Push (Hipertrofia/Isolamento)', exercises: [
+                { name: 'Supino Halteres Reto', sets: 4, reps: '10-12', rest: 75, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Bench-Press.gif' },
+                { name: 'Crucifixo Reto Halteres', sets: 3, reps: '12-15', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Fly.gif' },
+                { name: 'Desenvolvimento Arnold', sets: 4, reps: '12-15', rest: 75, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Arnold-Press.gif' },
+                { name: 'Elevação Frontal Barra', sets: 3, reps: '10-12', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Front-Raise.gif' },
+                { name: 'Tríceps Corda (testa na polia)', sets: 3, reps: '12-15', rest: 60, image: 'https://gymvisual.com/img/p/1/7/4/1/1/17411.gif', technique: 'Alongar bem' },
+                { name: 'Tríceps Coice Unilateral', sets: 3, reps: '15 (cada)', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Triceps-Kickback.gif' },
+            ]},
+            { id: 'pull_espessura_pico', day: 'Sexta-feira', name: 'Pull (Espessura/Pico)', exercises: [
+                { name: 'Remada Barra T', sets: 4, reps: '8-10', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/T-bar-Row.gif' },
+                { name: 'Puxada Alta Triângulo', sets: 4, reps: '10-12', rest: 75, image: 'https://www.mundoboaforma.com.br/wp-content/uploads/2021/04/puxada-frente-fechada-pulley-triangulo.gif' },
+                { name: 'Remada Sentada Polia (neutra)', sets: 3, reps: '12-15', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Cable-Row.gif' },
+                { name: 'Rosca Scott Máquina', sets: 4, reps: '10-12', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/09/Machine-Preacher-Curl.gif' },
+                { name: 'Rosca Concentrada', sets: 3, reps: '12-15 (cada)', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Concentration-Curl.gif' },
+            ]},
+            { id: 'legs_posterior_core', day: 'Sábado', name: 'Legs (Posterior/Volume) + Core', exercises: [
+                { name: 'Stiff Barra', sets: 4, reps: '8-10', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Stiff-Leg-Deadlift.gif' },
+                { name: 'Mesa Flexora', sets: 4, reps: '12-15 + Drop', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lying-Leg-Curl.gif', technique: 'Drop Set na última série' },
+                { name: 'Afundo Búlgaro Halteres', sets: 3, reps: '10-12 (cada)', rest: 75, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/Dumbbell-Bulgarian-Split-Squat.gif' },
+                { name: 'Cadeira Abdutora', sets: 4, reps: '15-20', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/08/Hip-Abduction-Machine.gif', technique: 'Foco glúteo médio' },
+                { name: 'Panturrilha Sentado', sets: 5, reps: '20-25', rest: 30, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Calf-Raise.gif', technique: 'Pico de contração' },
+                { name: 'Elevação de Pernas Pendurado', sets: 4, reps: 'Até a falha', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/08/Hanging-Leg-Raise.gif' },
+                { name: 'Prancha Lateral', sets: 3, reps: '45s (cada)', rest: 30, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Side-Plank.gif' },
+            ]},
+        ];
+        const motivationalQuotes = ["A cada treino, você está um passo mais perto.", "Supere seus limites, não suas expectativas.", "Consistência é a chave que abre a porta do progresso."];
+        const TOTAL_PLAN_WORKOUTS = 48;
+        const MET_VALUE = 6;
+        const COOKIE_NAME = 'workoutAppState_v6.5_html'; // Nome específico para esta versão HTML
+
+        const mealPlanData = { // Dieta Cutting Atualizada
+            totalCalories: 2050,
+            macros: { protein: 165, carbs: 190, fats: 65 },
+            meals: [
+                { name: "Café da manhã (07h-08h)", macros: "30g P | 40g C | 12g G", options: [{ id: 1, items: [{ food: "4 claras + 2 ovos inteiros", qty: "mexidos" }, { food: "Aveia", qty: "40g" }, { food: "Banana", qty: "1 unidade" }] }] },
+                { name: "Lanche da manhã", macros: "35g P | 30g C | 9g G", options: [{ id: 1, items: [{ food: "Frango desfiado", qty: "150g" }, { food: "Pão integral", qty: "2 fatias" }, { food: "Pasta de amendoim", qty: "10g" }] }] },
+                { name: "Almoço", macros: "40g P | 30g C | 12g G", options: [{ id: 1, items: [{ food: "Peito de frango ou patinho moído", qty: "150g" }, { food: "Arroz integral", qty: "100g" }, { food: "Salada verde + Azeite", qty: "1 fio (10g)" }] }] },
+                { name: "Pré-treino (16h-17h)", macros: "35g P | 35g C | 5g G", options: [{ id: 1, items: [{ food: "Batata-doce ou mandioca", qty: "150g" }, { food: "Peito de frango ou peixe", qty: "150g" }] }] },
+                { name: "Pós-treino", macros: "25g P | 25g C | 1g G", options: [{ id: 1, items: [{ food: "Whey Protein", qty: "1 scoop (30g)" }, { food: "Banana", qty: "1 unidade" }] }] },
+                { name: "Jantar / Ceia", macros: "30g P | 10g C | 15g G", options: [{ id: 1, items: [{ food: "Peixe (tilápia/salmão)", qty: "200g" }, { food: "Brócolis / abobrinha / salada", qty: "livre" }, { food: "Castanhas", qty: "10g" }] }] }
+            ],
+            rules: [
+                { icon: 'dumbbell', text: "Proteína em todas as refeições para proteger os músculos." },
+                { icon: 'zap', text: "Carboidratos focados ao redor do treino para máxima energia." },
+                { icon: 'droplet', text: "Água: Mínimo de 2,6 litros por dia (35ml/kg)." },
+                { icon: 'flame', text: "Cardio HIIT: 2 a 3 vezes por semana, conforme o plano de treino." },
+                { icon: 'pizza', text: "1 refeição livre na semana, sem exageros." }
+            ]
+        };
+
+        const initialMeasurements = {
+            braçoRelaxadoE: '35.0', braçoRelaxadoD: '37.0',
+            braçoContraidoE: '39.0', braçoContraidoD: '40.0',
+            antebraçoE: '30.0', antebraçoD: '31.0',
+            coxaE: '59.0', coxaD: '60.0',
+            panturrilhaE: '38.0', panturrilhaD: '38.0',
+            toraxRelaxado: '93.0', toraxInspirado: '98.0',
+            cintura: '84.0', abdome: '82.0', quadril: '95.0',
+            pescoco: '', ombro: '121.0'
+        };
+
+        // --- ESTADO DA APLICAÇÃO ---
+        let state = {
+            view: 'treino',
+            workoutsData: [],
+            selectedWorkoutId: null,
+            timer: { active: false, duration: 0, intervalId: null },
+            dailyQuote: '',
+            completedWorkoutsCount: 0,
+            activeWorkout: { startTime: null },
+            lastWorkoutStats: { date: null, duration: null, calories: null },
+            warmupState: { date: null, cardio: false, mobility: false },
+            cardioState: { hiit1: false, hiit2: false, hiit3: false },
+            measurementHistory: [],
+            bodyMeasurements: {},
+            planDates: { start: '27/10/2025', end: '22/12/2025' }, // Novas Datas
+            goals: { weight: '', bodyFat: '' },
+            isLoading: true,
+            planIdentifier: 'v6.5_271025_html' // Identificador para cookies
+        };
+        
+        let progressChart = null; // Variável global para a instância do Chart
+
+        // --- FUNÇÕES DE COOKIE ---
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            let cookieString = name + "=";
+            try {
+              cookieString += encodeURIComponent(JSON.stringify(value));
+            } catch(e) {
+              console.error("Erro ao codificar o cookie:", e);
+              return;
+            }
+            cookieString += expires + "; path=/; SameSite=Lax";
+            
+            if (cookieString.length > 4000) {
+                console.warn("Tamanho do cookie (" + cookieString.length + " bytes) é grande e pode exceder limites do navegador.");
+            }
+            document.cookie = cookieString;
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    try {
+                        return JSON.parse(decodeURIComponent(c.substring(nameEQ.length, c.length)));
+                    } catch (e) {
+                        console.error("Erro ao decodificar/parsear cookie:", e, ". Retornando null.");
+                        return null; // Retorna null se o parse falhar
+                    }
+                }
+            }
+            return null;
+        }
+
+        // --- FUNÇÕES DE INICIALIZAÇÃO E RENDERIZAÇÃO ---
+        function initializeApp() {
+            loadStateFromCookie();
+            setupEventListeners();
+            selectInitialWorkout();
+            setDailyQuote();
+            renderApp();
+            console.log("App Inicializado com estado:", state);
+        }
+        
+        // Função para inicializar o estado de setDetails
+        function initializeSetDetails(workouts) {
+            return workouts.map(w => ({
+                ...w,
+                exercises: w.exercises.map(ex => {
+                    const correctLength = ex.sets;
+                    if (ex.setDetails && ex.setDetails.length === correctLength) {
+                        return {
+                             ...ex,
+                             setDetails: ex.setDetails.map(s => ({
+                                 completed: s.completed || false,
+                                 weight: s.weight || ''
+                             }))
+                         };
+                    }
+                    return {
+                        ...ex,
+                        setDetails: Array(correctLength).fill({ completed: false, weight: '' })
+                    };
+                })
+            }));
+        }
+
+        function loadStateFromCookie() {
+            const savedState = getCookie(COOKIE_NAME);
+            if (savedState && savedState.planIdentifier === state.planIdentifier) {
+                 state = {
+                    ...state,
+                    ...savedState,
+                    workoutsData: initializeSetDetails(savedState.workoutsData || initialWorkouts),
+                    planDates: state.planDates, // Mantém datas fixas do novo plano
+                    isLoading: false
+                };
+                if (!state.measurementHistory || state.measurementHistory.length === 0) {
+                   state.measurementHistory = [{ date: 'Início', peso: 74.7, gordura: 21.1 }];
+                }
+                if (!state.bodyMeasurements || Object.keys(state.bodyMeasurements).length === 0) {
+                    state.bodyMeasurements = initialMeasurements;
+                }
+            } else {
+                console.log("Cookie não encontrado ou de plano diferente. Iniciando do zero.");
+                state.workoutsData = initializeSetDetails(initialWorkouts);
+                state.measurementHistory = [{ date: 'Início', peso: 74.7, gordura: 21.1 }];
+                state.bodyMeasurements = initialMeasurements;
+                state.isLoading = false;
+            }
+        }
+        
+        function saveStateToCookie() {
+            // Não salva o estado de loading ou timer
+            const stateToSave = { ...state };
+            delete stateToSave.isLoading;
+            delete stateToSave.timer; 
+            setCookie(COOKIE_NAME, stateToSave, 365);
+        }
+
+        function renderApp() {
+            if (state.isLoading) return; 
+
+            renderHeader();
+            renderTotalProgress();
+            renderTabs();
+            renderViewContent();
+            renderWeeklyCalendar();
+        }
+
+        function renderHeader() {
+            document.getElementById('daily-quote').textContent = `"${state.dailyQuote}"`;
+        }
+
+        function renderTotalProgress() {
+            const progress = (state.completedWorkoutsCount / TOTAL_PLAN_WORKOUTS) * 100;
+            document.getElementById('completed-workouts-text').textContent = `${state.completedWorkoutsCount}/${TOTAL_PLAN_WORKOUTS} treinos`;
+            document.getElementById('total-progress-percent').textContent = `${Math.round(progress)}%`;
+            document.getElementById('total-progress-bar').style.width = `${progress}%`;
+            document.getElementById('plan-start-date').textContent = state.planDates.start;
+            document.getElementById('plan-end-date').textContent = state.planDates.end;
+        }
+
+        function renderTabs() {
+            document.querySelectorAll('.view-tab').forEach(tab => {
+                if (tab.dataset.view === state.view) {
+                    tab.classList.add('bg-cyan-600');
+                    tab.classList.remove('bg-transparent');
+                } else {
+                    tab.classList.remove('bg-cyan-600');
+                    tab.classList.add('bg-transparent');
+                }
+            });
+
+            document.querySelectorAll('.view').forEach(viewElement => {
+                if (viewElement.id === `${state.view}-view`) {
+                    viewElement.classList.remove('hidden');
+                } else {
+                    viewElement.classList.add('hidden');
+                }
+            });
+        }
+
+        function renderViewContent() {
+            switch (state.view) {
+                case 'treino':
+                    renderWorkoutView();
+                    break;
+                case 'dieta':
+                    renderDietView();
+                    break;
+                case 'progresso':
+                    renderProgressView();
+                    break;
+            }
+        }
+
+        // --- RENDERIZAÇÃO: TREINO ---
+        function renderWorkoutView() {
+            renderWorkoutDropdown();
+            renderSelectedWorkout();
+            renderWarmupSection();
+        }
+
+        function renderWorkoutDropdown() {
+             const dropdown = document.getElementById('workout-dropdown');
+             const buttonText = document.getElementById('selected-workout-text');
+             const selected = state.workoutsData.find(w => w.id === state.selectedWorkoutId);
+             
+             buttonText.innerHTML = selected
+                ? `<span class="font-bold">${selected.day}:</span> ${selected.name}`
+                : 'Selecione um treino';
+
+             dropdown.innerHTML = initialWorkouts.map(w => `
+                <div data-id="${w.id}" class="workout-option px-4 py-3 hover:bg-gray-700 cursor-pointer flex justify-between items-center">
+                    <span><span class="font-bold">${w.day}:</span> ${w.name}</span>
+                    ${state.selectedWorkoutId === w.id ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400 lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>' : ''}
+                </div>
+             `).join('');
+
+             document.querySelectorAll('.workout-option').forEach(option => {
+                 option.addEventListener('click', () => {
+                     state.selectedWorkoutId = option.dataset.id;
+                     document.getElementById('workout-dropdown').classList.remove('show');
+                     renderWorkoutView();
+                     renderWeeklyCalendar(); // Atualiza o calendário também
+                     saveStateToCookie();
+                 });
+             });
+        }
+
+        function renderWeeklyCalendar() {
+            const calendarDaysContainer = document.getElementById('calendar-days');
+            const weekDays = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+            const selectedWorkoutDay = state.workoutsData.find(w => w.id === state.selectedWorkoutId)?.day;
+
+            calendarDaysContainer.innerHTML = weekDays.map(day => {
+                 const workout = initialWorkouts.find(w => w.day.startsWith(day));
+                 const isSelected = selectedWorkoutDay === workout?.day;
+                 return `
+                    <div class="p-2 rounded-lg ${isSelected ? 'bg-cyan-700' : 'bg-gray-700'}">
+                        <p class="font-bold text-sm">${day}</p>
+                        <p class="text-xs text-gray-400 truncate">${workout ? workout.name : 'Descanso'}</p>
+                    </div>
+                 `;
+            }).join('');
+        }
+        
+        function renderWarmupSection() {
+            const section = document.getElementById('warmup-section');
+            const todayStr = new Date().toLocaleDateString('pt-BR');
+            if (state.warmupState.date !== todayStr) {
+                state.warmupState = { date: todayStr, cardio: false, mobility: false };
+                saveStateToCookie();
+            }
+
+            section.innerHTML = `
+                <h3 class="text-lg font-bold text-cyan-400 mb-3">Aquecimento Pré-Treino</h3>
+                <div class="space-y-2">
+                    ${renderCheckboxHTML('warmup-cardio', 'Cardio Leve', state.warmupState.cardio, '5-7 minutos na esteira ou elíptico', 'wind')}
+                    ${renderCheckboxHTML('warmup-mobility', 'Mobilidade Articular', state.warmupState.mobility, 'Girar ombros, quadris, tornozelos', 'repeat')}
+                </div>
+            `;
+            document.getElementById('warmup-cardio').addEventListener('click', () => handleWarmupToggle('cardio'));
+            document.getElementById('warmup-mobility').addEventListener('click', () => handleWarmupToggle('mobility'));
+        }
+
+        function renderSelectedWorkout() {
+            const container = document.getElementById('workout-day-content');
+            const workout = state.workoutsData.find(w => w.id === state.selectedWorkoutId);
+
+            if (!workout) {
+                container.innerHTML = '<p>Selecione um treino para começar.</p>';
+                return;
+            }
+
+            const totalSets = workout.exercises.reduce((acc, ex) => acc + ex.sets, 0);
+            const completedSetsCount = workout.exercises.reduce((acc, ex) => acc + (ex.setDetails ? ex.setDetails.filter(s => s.completed).length : 0), 0);
+            const progress = totalSets > 0 ? (completedSetsCount / totalSets) * 100 : 0;
+            const isCompletedToday = state.lastWorkoutStats.date === new Date().toLocaleDateString('pt-BR');
+
+            container.innerHTML = `
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-medium text-gray-300">Progresso do Treino</span>
+                        <span class="text-sm font-medium text-cyan-400">${Math.round(progress)}%</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
+                        <div class="bg-cyan-500 h-2.5 rounded-full" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+
+                ${workout.exercises.map((exercise, exIndex) => `
+                    <div class="relative bg-gray-800 rounded-xl p-4 md:p-6 mb-4 border border-gray-700">
+                        <div class="flex justify-between items-center">
+                            <div class="flex-1 pr-4">
+                                <h3 class="text-lg font-bold text-white">${exercise.name}</h3>
+                                <p class="text-sm text-gray-400">${exercise.sets}s x ${exercise.reps}r</p>
+                                ${exercise.technique ? `<p class="text-xs text-amber-400 italic mt-1">${exercise.technique}</p>` : ''}
+                            </div>
+                            <img src="${exercise.image}" alt="Animação de ${exercise.name}" class="w-20 h-20 rounded-lg object-cover border-2 border-gray-600 cursor-pointer exercise-image" data-src="${exercise.image}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/1F2937/FFFFFF?text=Erro';" />
+                        </div>
+                        <div class="mt-4 space-y-3">
+                            ${(exercise.setDetails && exercise.setDetails.length === exercise.sets ? exercise.setDetails : Array(exercise.sets).fill({ completed: false, weight: '' })).map((set, setIndex) => `
+                                <div class="flex items-center justify-between p-3 rounded-lg ${set.completed ? 'bg-green-900/50' : 'bg-gray-700'}">
+                                    <span class="font-semibold text-white w-1/4">Série ${setIndex + 1}</span>
+                                    <div class="w-1/2 flex items-center">
+                                        <input type="number" placeholder="kg" value="${set.weight || ''}" data-ex="${exIndex}" data-set="${setIndex}" class="set-weight bg-gray-800 text-white rounded-md p-2 w-full text-center focus:ring-2 focus:ring-cyan-500" />
+                                    </div>
+                                    <button data-ex="${exIndex}" data-set="${setIndex}" class="set-toggle w-10 h-10 rounded-full flex items-center justify-center ${set.completed ? 'bg-green-500' : 'bg-gray-600'}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button data-rest="${exercise.rest}" class="start-timer absolute top-5 right-28 bg-blue-600 p-2 rounded-full" aria-label="Iniciar cronômetro">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </button>
+                    </div>
+                `).join('')}
+
+                ${progress === 100 && !isCompletedToday ? `
+                    <button id="finish-workout-button" class="w-full bg-green-600 font-bold py-3 rounded-lg animate-pulse">Marcar Treino como Concluído</button>
+                ` : ''}
+                ${isCompletedToday ? `
+                    <div class="text-center p-4 bg-green-900/50 rounded-lg border border-green-500">
+                        <p class="font-bold text-green-400">Parabéns! Treino de hoje concluído.</p>
+                        ${state.lastWorkoutStats.duration ? `<p class="text-sm text-gray-400">Duração: ${formatDuration(state.lastWorkoutStats.duration)} | Calorias: ~${state.lastWorkoutStats.calories} kcal</p>` : ''}
+                    </div>
+                ` : ''}
+            `;
+            attachWorkoutEventListeners();
+        }
+
+
+        // --- RENDERIZAÇÃO: DIETA ---
+        function renderDietView() {
+            const container = document.getElementById('dieta-view');
+            const { totalCalories, macros, meals, rules } = mealPlanData;
+
+             // ÍCONES SVG COMO STRINGS (CORREÇÃO)
+             const getIconSvg = (iconName, classes = "w-5 h-5") => {
+                 switch(iconName) {
+                    case 'dumbbell': return `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes} mr-3 mt-0.5 text-cyan-400 flex-shrink-0"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m6 2 4 4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/><path d="M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0"/></svg>`;
+                    case 'zap': return `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes} mr-3 mt-0.5 text-cyan-400 flex-shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>`;
+                    case 'droplet': return `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes} mr-3 mt-0.5 text-cyan-400 flex-shrink-0"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>`;
+                    case 'flame': return `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes} mr-3 mt-0.5 text-cyan-400 flex-shrink-0"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`;
+                    case 'pizza': return `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes} mr-3 mt-0.5 text-cyan-400 flex-shrink-0"><path d="M15 11h.01"/><path d="M11 15h.01"/><path d="M16 16h.01"/><path d="m2 16 2.1-11.4a1 1 0 0 1 .8-.6h14.2a1 1 0 0 1 .8.6L22 16"/><path d="M17.4 16a6 6 0 0 1-10.8 0"/><path d="M22 16H2"/></svg>`;
+                    case 'bookOpen': return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes} mr-2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`;
+                    default: return '';
+                 }
+             };
+
+            container.innerHTML = `
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6 text-center">
+                    <h3 class="text-lg font-bold text-cyan-400 mb-2">Metas Nutricionais Diárias (Cutting)</h3>
+                    <div class="flex justify-around items-center">
+                        <div class="text-white"><p class="font-bold text-xl">${totalCalories}</p><p class="text-xs text-gray-400">Kcal</p></div>
+                        <div class="text-white"><p class="font-bold text-xl">${macros.protein}g</p><p class="text-xs text-gray-400">Proteína</p></div>
+                        <div class="text-white"><p class="font-bold text-xl">${macros.carbs}g</p><p class="text-xs text-gray-400">Carbos</p></div>
+                        <div class="text-white"><p class="font-bold text-xl">${macros.fats}g</p><p class="text-xs text-gray-400">Gordura</p></div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    ${meals.map(meal => `
+                        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold text-white">${meal.name}</h4>
+                                <p class="text-xs font-mono text-amber-300 bg-gray-700 px-2 py-1 rounded">${meal.macros}</p>
+                            </div>
+                            ${meal.options.map(option => `
+                                <div class="mt-2 pt-2 border-t border-gray-700">
+                                    <ul>
+                                        ${option.items.map(item => `
+                                            <li class="flex justify-between text-sm py-1 border-b border-gray-700/50">
+                                                <span class="text-gray-300">${item.food}</span>
+                                                <span class="font-medium">${item.qty}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('')}
+                </div>
+                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mt-6">
+                   <h3 class="text-lg font-bold text-cyan-400 mb-3 flex items-center">${getIconSvg('bookOpen', 'w-5 h-5 mr-2')} Regras do Jogo</h3>
+                   <ul class="space-y-2">
+                      ${rules.map(rule => `
+                         <li class="flex items-start text-sm">
+                            ${getIconSvg(rule.icon, 'w-5 h-5 mr-3 mt-0.5 text-cyan-400 flex-shrink-0')}
+                            <span class="text-gray-300">${rule.text}</span>
+                         </li>
+                       `).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        // --- RENDERIZAÇÃO: PROGRESSO ---
+        function renderProgressView() {
+            const container = document.getElementById('progresso-view');
+            container.innerHTML = `
+                ${renderBodyStatsHTML()}
+                ${renderGoalsHTML()}
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6">
+                    <h3 class="text-lg font-bold text-cyan-400 mb-3">Gráfico de Progresso</h3>
+                    <div class="chart-container">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6">
+                    <h3 class="text-lg font-bold text-cyan-400 mb-3">Acompanhamento de Perímetros</h3>
+                    <form id="measurement-form" class="space-y-4 mb-6">
+                       <div class="grid grid-cols-2 gap-4">
+                           <input type="number" step="0.1" placeholder="Peso Atual (kg)" id="current-weight" class="bg-gray-700 text-white rounded-md p-2 w-full text-center focus:ring-2 focus:ring-cyan-500 focus:outline-none" required/>
+                           <input type="number" step="0.1" placeholder="Gordura Atual (%)" id="current-fat" class="bg-gray-700 text-white rounded-md p-2 w-full text-center focus:ring-2 focus:ring-cyan-500 focus:outline-none" required/>
+                       </div>
+                       <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded-lg transition">Salvar Peso e Gordura no Gráfico</button>
+                    </form>
+                    ${renderMeasurementFieldsHTML()}
+                </div>
+                ${renderCardioHTML()}
+            `;
+            // Registrar o plugin de anotações (necessário para Chart.js 3)
+            if (window.ChartAnnotation) {
+                 Chart.register(window.ChartAnnotation);
+            }
+            renderChart();
+            attachProgressEventListeners();
+        }
+
+        function renderBodyStatsHTML() {
+             // CORREÇÃO: Usar strings para ícones
+             const stats = [
+                { icon: 'user', label: "Nome", value: "Fábio" }, { icon: 'cake', label: "Idade", value: "35 anos" }, 
+                { icon: 'scale', label: "Peso Atual", value: `${state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length-1].peso : 74.7} kg` },
+                { icon: 'activity', label: "Altura", value: "1.70 m" }, 
+                { icon: 'target', label: "IMC Atual", value: calculateIMC(state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length-1].peso : 74.7) },
+                { icon: 'flame', label: "Gordura Corporal", value: `${state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length-1].gordura : 21.1}%` },
+                { icon: 'dumbbell', label: "Músculos", value: "38.9 kg" }, 
+                { icon: 'shield', label: "Gordura Visceral", value: "9" }, 
+                { icon: 'heart', label: "Metabolismo Basal", value: "1700 Kcal" },
+            ];
+             
+             // CORREÇÃO: Função de ícone SVG
+              const getStatIconSvg = (iconName, classes = "text-cyan-400 mb-1 w-6 h-6") => {
+                 switch(iconName){
+                     case 'user': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+                     case 'cake': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="M20 21v-8a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v8"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-1 4-1 2.5 2 4 2 2-1 2-1"/><path d="M12 4v4"/><path d="M12 8a2 2 0 0 0-2 2v2"/><path d="M14 10a2 2 0 0 1 2-2v4"/></svg>`;
+                     case 'scale': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/></svg>`;
+                     case 'activity': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`;
+                     case 'target': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
+                     case 'flame': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`;
+                     case 'dumbbell': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m6 2 4 4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/><path d="M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0"/></svg>`;
+                     case 'shield': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+                     case 'heart': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+                     default: return '';
+                  }
+             };
+
+            return `<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6"><h3 class="text-lg font-bold text-cyan-400 mb-4">Dados Atuais</h3><div class="grid grid-cols-3 sm:grid-cols-3 gap-4 text-center">${stats.map(stat => `<div class="bg-gray-700 p-3 rounded-lg flex flex-col items-center justify-center">${getStatIconSvg(stat.icon)}<p class="text-xs text-gray-400">${stat.label}</p><p class="font-bold text-white text-sm sm:text-base">${stat.value}</p></div>`).join('')}</div></div>`;
+        }
+
+        function renderGoalsHTML() {
+             const getTrophyIcon = (classes = "w-5 h-5 mr-2") => `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.87 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.13 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`;
+
+            return `
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6">
+                    <h3 class="text-lg font-bold text-cyan-400 mb-3 flex items-center">${getTrophyIcon()} Minhas Metas</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-sm text-gray-400">Peso Alvo (kg)</label>
+                            <input type="number" step="0.1" id="goal-weight" value="${state.goals.weight || ''}" class="goal-input bg-gray-700 text-white rounded-md p-2 w-full text-center focus:ring-2 focus:ring-cyan-500 focus:outline-none"/>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400">Gordura Corporal Alvo (%)</label>
+                            <input type="number" step="0.1" id="goal-bodyFat" value="${state.goals.bodyFat || ''}" class="goal-input bg-gray-700 text-white rounded-md p-2 w-full text-center focus:ring-2 focus:ring-cyan-500 focus:outline-none"/>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderMeasurementFieldsHTML() {
+            const measurementFieldsConfig = [
+              { category: 'Membros Superiores', fields: [
+                { key: 'braçoRelaxadoE', label: 'Braço Relaxado E. (cm)'}, { key: 'braçoRelaxadoD', label: 'Braço Relaxado D. (cm)'},
+                { key: 'braçoContraidoE', label: 'Braço Contraído E. (cm)'}, { key: 'braçoContraidoD', label: 'Braço Contraído D. (cm)'},
+                { key: 'antebraçoE', label: 'Antebraço E. (cm)'}, { key: 'antebraçoD', label: 'Antebraço D. (cm)'}
+              ]},
+              { category: 'Membros Inferiores', fields: [
+                { key: 'coxaE', label: 'Coxa E. (cm)'}, { key: 'coxaD', label: 'Coxa D. (cm)'},
+                { key: 'panturrilhaE', label: 'Panturrilha E. (cm)'}, { key: 'panturrilhaD', label: 'Panturrilha D. (cm)'}
+              ]},
+              { category: 'Tronco', fields: [
+                { key: 'toraxRelaxado', label: 'Tórax Relaxado (cm)'}, { key: 'toraxInspirado', label: 'Tórax Inspirado (cm)'},
+                { key: 'cintura', label: 'Cintura (cm)'}, { key: 'abdome', label: 'Abdome (cm)'}, { key: 'quadril', label: 'Quadril (cm)'}
+              ]},
+              { category: 'Outros', fields: [
+                { key: 'pescoco', label: 'Pescoço (cm)'}, { key: 'ombro', label: 'Ombro (cm)'}
+              ]}
+            ];
+
+             return measurementFieldsConfig.map(category => `
+                <div class="mb-4">
+                    <h4 class="text-md font-semibold text-cyan-400 mb-2 border-b border-gray-700 pb-1">${category.category}</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                      ${category.fields.map(field => `
+                         <div key="${field.key}">
+                            <label class="text-sm text-gray-400">${field.label}</label>
+                            <input type="number" step="0.1" data-key="${field.key}" value="${state.bodyMeasurements[field.key] || ''}" class="body-measurement-input bg-gray-700 text-white rounded-md p-2 w-full text-center focus:ring-2 focus:ring-cyan-500 focus:outline-none"/>
+                         </div>
+                      `).join('')}
+                    </div>
+                </div>
+             `).join('');
+        }
+        
+        function renderCardioHTML() {
+             return `
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                    <h3 class="text-lg font-bold text-cyan-400 mb-3">Cardio da Semana (HIIT)</h3>
+                    <div class="space-y-2">
+                        ${renderCheckboxHTML('cardio-hiit1', 'Sessão HIIT 1', state.cardioState.hiit1, 'Pós-treino, 15 min (ex: bike 20s sprint / 40s leve)', 'zap')}
+                        ${renderCheckboxHTML('cardio-hiit2', 'Sessão HIIT 2', state.cardioState.hiit2, 'Pós-treino, 15 min', 'zap')}
+                        ${renderCheckboxHTML('cardio-hiit3', 'Sessão HIIT 3 (Opcional)', state.cardioState.hiit3, 'Pós-treino, 15 min', 'zap')}
+                    </div>
+                </div>
+             `;
+        }
+
+        function renderCheckboxHTML(id, label, checked, details, iconName) {
+             const getCheckIcon = (classes = "w-4 h-4 text-white") => `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="M20 6 9 17l-5-5"/></svg>`;
+             const getCheckboxIcon = (iconName, classes = "mr-3 w-5 h-5") => {
+                  const combinedClasses = `${classes} ${checked ? 'text-green-400' : 'text-cyan-400'}`;
+                  switch(iconName){
+                     case 'wind': return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${combinedClasses}"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>`;
+                     case 'repeat': return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${combinedClasses}"><path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 0 1 4-4h12"/><path d="M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 0 1-4 4H5"/></svg>`;
+                     case 'zap': return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${combinedClasses}"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>`;
+                     default: return '';
+                  }
+             };
+
+            return `
+                <div id="${id}" class="checkbox-container flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${checked ? 'bg-green-900/50 border-green-700' : 'bg-gray-700 border-gray-700'} border">
+                    <div class="flex items-center">
+                       ${getCheckboxIcon(iconName)}
+                        <div>
+                            <span class="font-semibold text-white">${label}</span>
+                            ${details ? `<p class="text-xs text-gray-400">${details}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${checked ? 'bg-green-500' : 'bg-gray-600'}">
+                        ${checked ? getCheckIcon() : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+         function renderChart() {
+            const ctx = document.getElementById('progressChart');
+            if (!ctx) return;
+
+             if (progressChart) {
+                 progressChart.destroy();
+             }
+
+            const history = state.measurementHistory;
+            const labels = history.map(item => item.date);
+            const weightData = history.map(item => item.peso);
+            const fatData = history.map(item => item.gordura);
+
+            // Preparar annotations (linhas de meta)
+            const annotations = {};
+            if (state.goals.weight && parseFloat(state.goals.weight) > 0) {
+                annotations['goalWeightLine'] = {
+                    type: 'line',
+                    yMin: parseFloat(state.goals.weight),
+                    yMax: parseFloat(state.goals.weight),
+                    borderColor: '#F6E05E',
+                    borderWidth: 2,
+                    borderDash: [6, 6],
+                    label: {
+                        content: `Meta ${state.goals.weight}kg`,
+                        enabled: true,
+                        position: 'start',
+                        backgroundColor: 'rgba(0,0,0,0.6)',
+                        color: '#F6E05E',
+                        font: { size: 10 }
+                    },
+                    yScaleID: 'yLeft',
+                };
+            }
+             if (state.goals.bodyFat && parseFloat(state.goals.bodyFat) > 0) {
+                 annotations['goalFatLine'] = {
+                     type: 'line',
+                     yMin: parseFloat(state.goals.bodyFat),
+                     yMax: parseFloat(state.goals.bodyFat),
+                     borderColor: '#F6E05E',
+                     borderWidth: 2,
+                     borderDash: [6, 6],
+                     label: {
+                         content: `Meta ${state.goals.bodyFat}%`,
+                         enabled: true,
+                         position: 'end',
+                         backgroundColor: 'rgba(0,0,0,0.6)',
+                         color: '#F6E05E',
+                         font: { size: 10 }
+                     },
+                     yScaleID: 'yRight',
+                 };
+             }
+
+            progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Peso (kg)',
+                            data: weightData,
+                            borderColor: '#8884d8',
+                            tension: 0.1,
+                            yAxisID: 'yLeft',
+                        },
+                        {
+                            label: 'Gordura Corporal (%)',
+                            data: fatData,
+                            borderColor: '#4FD1C5',
+                            tension: 0.1,
+                            yAxisID: 'yRight',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    color: '#A0AEC0',
+                     scales: {
+                        x: { ticks: { color: '#A0AEC0' }, grid: { color: '#4A5568' } },
+                        yLeft: {
+                            type: 'linear', position: 'left',
+                            title: { display: true, text: 'Peso (kg)', color: '#A0AEC0' },
+                            ticks: { color: '#A0AEC0' }, grid: { color: '#4A5568' }
+                        },
+                        yRight: {
+                            type: 'linear', position: 'right',
+                            title: { display: true, text: 'Gordura (%)', color: '#4FD1C5' },
+                            ticks: { color: '#4FD1C5' }, grid: { drawOnChartArea: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#A0AEC0' } },
+                        tooltip: {
+                           backgroundColor: '#1A202C', titleColor: '#FFFFFF',
+                           bodyColor: '#A0AEC0', borderColor: '#4A5568', borderWidth: 1
+                        },
+                        annotation: { annotations: annotations }
+                    }
+                }
+            });
+        }
+
+
+        // --- LÓGICA E EVENT LISTENERS ---
+        function setupEventListeners() {
+            // Abas
+            document.querySelectorAll('.view-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    state.view = tab.dataset.view;
+                    renderApp(); // Re-renderiza tudo para trocar a view
+                    saveStateToCookie();
+                });
+            });
+
+            // Dropdown de treino
+            document.getElementById('workout-select-button').addEventListener('click', () => {
+                document.getElementById('workout-dropdown').classList.toggle('show');
+            });
+            window.addEventListener('click', (event) => {
+                 if (!event.target.closest('#workout-select-button') && !event.target.closest('#workout-dropdown')) {
+                      document.getElementById('workout-dropdown').classList.remove('show');
+                 }
+            });
+
+            // Timer
+            document.getElementById('timer-stop-button').addEventListener('click', () => stopTimer(false));
+             document.getElementById('image-modal').addEventListener('click', () => closeImageModal());
+             document.getElementById('image-modal-close').addEventListener('click', () => closeImageModal());
+
+             attachWorkoutEventListeners(); // Lida com conteúdo dinâmico do treino
+             attachProgressEventListeners(); // Lida com conteúdo dinâmico do progresso
+        }
+
+        function attachWorkoutEventListeners() {
+            document.querySelectorAll('.set-toggle').forEach(button => {
+                button.onclick = () => {
+                    const exIndex = parseInt(button.dataset.ex);
+                    const setIndex = parseInt(button.dataset.set);
+                    handleSetToggle(exIndex, setIndex);
+                };
+            });
+            document.querySelectorAll('.set-weight').forEach(input => {
+                input.onchange = () => { // Usar onchange para salvar quando sair do campo
+                    const exIndex = parseInt(input.dataset.ex);
+                    const setIndex = parseInt(input.dataset.set);
+                    handleWeightChange(exIndex, setIndex, input.value);
+                };
+            });
+             document.querySelectorAll('.start-timer').forEach(button => {
+                 button.onclick = () => {
+                     const duration = parseInt(button.dataset.rest);
+                     startTimer(duration);
+                 };
+             });
+              const finishButton = document.getElementById('finish-workout-button');
+              if (finishButton) {
+                  finishButton.onclick = handleFinishWorkout;
+              }
+               document.querySelectorAll('.exercise-image').forEach(img => {
+                   img.onclick = () => openImageModal(img.dataset.src);
+               });
+        }
+        
+         function attachProgressEventListeners() {
+             const measurementForm = document.getElementById('measurement-form');
+             if (measurementForm) {
+                 measurementForm.onsubmit = (e) => {
+                     e.preventDefault();
+                     const weightInput = document.getElementById('current-weight');
+                     const fatInput = document.getElementById('current-fat');
+                     if (weightInput.value && fatInput.value) {
+                         handleAddMeasurement(parseFloat(weightInput.value), parseFloat(fatInput.value));
+                         weightInput.value = '';
+                         fatInput.value = '';
+                     }
+                 };
+             }
+             document.querySelectorAll('.body-measurement-input').forEach(input => {
+                 input.onchange = () => {
+                     handleBodyMeasurementChange(input.dataset.key, input.value);
+                 };
+             });
+             document.querySelectorAll('.goal-input').forEach(input => {
+                  input.onchange = () => {
+                     const key = input.id.split('-')[1];
+                     handleGoalChange(key, input.value);
+                     renderChart();
+                  };
+             });
+              document.querySelectorAll('.checkbox-container[id^="cardio-"]').forEach(checkbox => {
+                 checkbox.onclick = () => {
+                     const key = checkbox.id.split('-')[1];
+                     handleCardioToggle(key);
+                 };
+              });
+         }
+
+        function selectInitialWorkout() {
+            const isValid = state.selectedWorkoutId && initialWorkouts.some(w => w.id === state.selectedWorkoutId);
+            if (isValid) {
+                return;
+            }
+            const dayIndex = (new Date().getDay() + 6) % 7;
+            const todayWorkout = initialWorkouts[dayIndex];
+            state.selectedWorkoutId = todayWorkout ? todayWorkout.id : initialWorkouts[0].id;
+        }
+
+        function setDailyQuote() {
+             const savedQuote = getCookie('dailyQuoteData');
+             const todayStr = new Date().toLocaleDateString('pt-BR');
+             if (savedQuote && savedQuote.date === todayStr) {
+                 state.dailyQuote = savedQuote.quote;
+             } else {
+                 const newQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+                 state.dailyQuote = newQuote;
+                 setCookie('dailyQuoteData', { quote: newQuote, date: todayStr }, 1);
+             }
+        }
+
+        function handleSetToggle(exIndex, setIndex) {
+            if (!state.activeWorkout.startTime) {
+                 state.activeWorkout.startTime = Date.now();
+            }
+            const workout = state.workoutsData.find(w => w.id === state.selectedWorkoutId);
+            if (workout) {
+                const exercise = workout.exercises[exIndex];
+                if (exercise && exercise.setDetails && exercise.setDetails[setIndex]) {
+                    exercise.setDetails[setIndex].completed = !exercise.setDetails[setIndex].completed;
+                    renderSelectedWorkout();
+                    saveStateToCookie();
+                }
+            }
+        }
+
+        function handleWeightChange(exIndex, setIndex, weight) {
+            const workout = state.workoutsData.find(w => w.id === state.selectedWorkoutId);
+             if (workout) {
+                 const exercise = workout.exercises[exIndex];
+                 if (exercise && exercise.setDetails && exercise.setDetails[setIndex]) {
+                     exercise.setDetails[setIndex].weight = weight;
+                     saveStateToCookie();
+                 }
+             }
+        }
+
+         function handleFinishWorkout() {
+             const startTime = state.activeWorkout.startTime;
+             if (!startTime) return; 
+
+             const durationSeconds = Math.round((Date.now() - startTime) / 1000);
+             const currentWeightKg = state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length - 1].peso : 74.7;
+             const caloriesBurned = durationSeconds > 0 ? Math.round((MET_VALUE * 3.5 * currentWeightKg / 200) * (durationSeconds / 60)) : 0;
+
+             state.lastWorkoutStats = {
+                 date: new Date().toLocaleDateString('pt-BR'),
+                 duration: durationSeconds,
+                 calories: caloriesBurned
+             };
+             state.completedWorkoutsCount += 1;
+             state.activeWorkout.startTime = null; 
+
+             renderSelectedWorkout();
+             renderTotalProgress();
+             saveStateToCookie();
+         }
+        
+         function handleAddMeasurement(peso, gordura) {
+             state.measurementHistory.push({
+                 date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+                 peso,
+                 gordura
+             });
+             renderChart();
+             // Atualiza os stats exibidos
+             const statsContainer = document.getElementById('progresso-view');
+             if (statsContainer) {
+                 statsContainer.querySelector('#body-stats-container').innerHTML = renderBodyStatsHTML();
+             }
+             saveStateToCookie();
+         }
+
+         function handleWarmupToggle(key) {
+             state.warmupState[key] = !state.warmupState[key];
+             renderWarmupSection();
+             saveStateToCookie();
+         }
+
+         function handleCardioToggle(key) {
+             state.cardioState[key] = !state.cardioState[key];
+              if (state.view === 'progresso') {
+                 // A forma mais simples é re-renderizar a view
+                 renderProgressView();
+              }
+             saveStateToCookie();
+         }
+
+         function handleBodyMeasurementChange(key, value) {
+             state.bodyMeasurements[key] = value;
+             saveStateToCookie();
+         }
+         
+         function handleGoalChange(key, value) {
+             state.goals[key] = value;
+             renderChart(); // Atualiza o gráfico com a nova meta
+             saveStateToCookie();
+         }
+
+        // --- LÓGICA DO TIMER ---
+        function startTimer(duration) {
+            if (state.timer.active) return;
+            clearInterval(state.timer.intervalId);
+            state.timer = { active: true, duration: duration, timeLeft: duration, intervalId: null };
+            updateTimerDisplay();
+            document.getElementById('timer-modal').classList.add('show');
+
+            state.timer.intervalId = setInterval(() => {
+                state.timer.timeLeft -= 1;
+                updateTimerDisplay();
+                if (state.timer.timeLeft <= 0) {
+                    stopTimer(true);
+                }
+            }, 1000);
+        }
+
+        function stopTimer(playSound = false) {
+            clearInterval(state.timer.intervalId);
+            state.timer = { active: false, duration: 0, intervalId: null };
+            document.getElementById('timer-modal').classList.remove('show');
+            if (playSound) {
+                playTimerSound();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const timeElement = document.getElementById('timer-time');
+            if (!timeElement) return;
+            const minutes = Math.floor(state.timer.timeLeft / 60);
+            const seconds = state.timer.timeLeft % 60;
+            timeElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function playTimerSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 1);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 1);
+            } catch (e) {
+                console.error("Não foi possível tocar o som do timer:", e);
+            }
+        }
+
+        // --- LÓGICA MODAL IMAGEM ---
+         function openImageModal(imageUrl) {
+             document.getElementById('modal-image-element').src = imageUrl;
+             document.getElementById('image-modal').classList.add('show');
+         }
+
+         function closeImageModal() {
+             document.getElementById('image-modal').classList.remove('show');
+             document.getElementById('modal-image-element').src = "";
+         }
+
+        // --- FUNÇÕES UTILITÁRIAS ---
+        function formatDuration(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}m ${remainingSeconds}s`;
+        }
+
+        function calculateIMC(weight) {
+            if (!weight) return 'N/A';
+            const heightM = 1.70;
+            return (weight / (heightM * heightM)).toFixed(1);
+        }
+
+        // --- INICIALIZAÇÃO QUANDO O DOM ESTIVER PRONTO ---
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+    </script>
+</body>
+</html>
