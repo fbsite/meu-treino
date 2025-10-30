@@ -56,7 +56,8 @@
             <!-- NOME DO USUÁRIO ADICIONADO -->
             <h2 class="text-xl font-semibold text-cyan-400 mt-1 mb-2">para Fábio</h2>
             
-            <div id="save-status" class="h-4 text-sm transition-opacity duration-1000 ease-out"></div>
+            <!-- Indicador de Salvamento Removido -->
+            <!-- <div id="save-status" class="h-4 text-sm transition-opacity duration-1000 ease-out"></div> -->
             <p id="daily-quote" class="text-gray-400 italic mt-2">Carregando citação...</p>
         </header>
 
@@ -309,8 +310,20 @@
             return null;
         }
 
+        // --- FUNÇÃO DE STATUS DE SALVAMENTO (MODIFICADA) ---
         function showSaveStatus(message, type = "success") {
+            // Função desativada a pedido do usuário, mantendo os logs
+            if (type === 'error') {
+                 console.error(message);
+            } else if (type === 'saving') {
+                 console.log(message);
+            } else {
+                 console.log(message);
+            }
+            
+            /*
             const statusEl = document.getElementById('save-status');
+            if (!statusEl) return; // Se o elemento não existe, não faz nada
             if (saveStatusTimer) {
                 clearTimeout(saveStatusTimer); 
             }
@@ -332,6 +345,7 @@
                     statusEl.style.opacity = 0;
                 }, 2000); 
             }
+            */
         }
 
         function saveStateToCookie() {
@@ -1076,8 +1090,6 @@
              if (workout) {
                  const exercise = workout.exercises[exIndex];
                  if (exercise && exercise.setDetails && exercise.setDetails[setIndex]) {
-                    // *** CORREÇÃO APLICADA AQUI ***
-                    // Cria uma nova cópia de setDetails
                     const newSetDetails = [...exercise.setDetails];
                     newSetDetails[setIndex] = { ...newSetDetails[setIndex], weight: weight };
                     exercise.setDetails = newSetDetails;
@@ -1223,15 +1235,12 @@
             return (weight / (heightM * heightM)).toFixed(1);
         }
         
-         // *** CORREÇÃO DEFINITIVA DO BUG ***
          function initializeSetDetails(workouts) {
-            if (!workouts) return []; // Retorna array vazio se workouts for undefined
+            if (!workouts) return []; 
              return workouts.map(w => ({
                  ...w,
                  exercises: w.exercises.map(ex => {
-                     // Se os dados salvos existirem e tiverem o tamanho correto
                      if (ex.setDetails && ex.setDetails.length === ex.sets) {
-                         // Garante que são cópias independentes
                          return {
                              ...ex,
                              setDetails: ex.setDetails.map(s => ({
@@ -1240,7 +1249,6 @@
                              }))
                          };
                      }
-                     // Se não existir ou estiver incorreto, cria um novo array com OBJETOS ÚNICOS
                      return {
                          ...ex,
                          setDetails: Array.from({ length: ex.sets }, () => ({ completed: false, weight: '' }))
