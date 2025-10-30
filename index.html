@@ -6,8 +6,6 @@
     <title>Plano Performance - Fábio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-    <!-- Carregar o plugin de anotações do Chart.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.4.0/chartjs-plugin-annotation.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -23,8 +21,8 @@
         .bg-cyan-600 { background-color: #0891B2; }
         .bg-cyan-700 { background-color: #0E7490; }
         .text-amber-400 { color: #FBBF24; }
-        .text-amber-300 { color: #FCD34D; }
         .text-green-400 { color: #34D399; }
+        .text-red-500 { color: #EF4444; }
         .bg-green-500 { background-color: #10B981; }
         .bg-green-900\/50 { background-color: rgba(6, 78, 59, 0.5); }
         .border-green-700 { border-color: #047857;}
@@ -51,11 +49,15 @@
     <div class="max-w-2xl mx-auto">
         <!-- Cabeçalho -->
         <header class="text-center mb-6">
-            <div class="flex items-center justify-center gap-3 mb-4">
+            <div class="flex items-center justify-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400 lucide lucide-dumbbell"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m6 2 4 4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/><path d="M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0"/></svg>
                 <h1 class="text-3xl font-bold">Plano Performance</h1>
             </div>
-            <p id="daily-quote" class="text-gray-400 italic">Carregando citação...</p>
+            <!-- NOME DO USUÁRIO ADICIONADO -->
+            <h2 class="text-xl font-semibold text-cyan-400 mt-1 mb-2">para Fábio</h2>
+            
+            <div id="save-status" class="h-4 text-sm transition-opacity duration-1000 ease-out"></div>
+            <p id="daily-quote" class="text-gray-400 italic mt-2">Carregando citação...</p>
         </header>
 
         <!-- Progresso Total -->
@@ -208,7 +210,8 @@
         const motivationalQuotes = ["A cada treino, você está um passo mais perto.", "Supere seus limites, não suas expectativas.", "Consistência é a chave que abre a porta do progresso."];
         const TOTAL_PLAN_WORKOUTS = 48;
         const MET_VALUE = 6;
-        const COOKIE_NAME = 'workoutAppState_v6.5_html'; // Nome específico para esta versão HTML
+        const COOKIE_NAME = 'workoutAppState_v6.7_html'; // Nome específico para esta versão
+        const PLAN_IDENTIFIER = 'v6.7_271025_html';
 
         const mealPlanData = { // Dieta Cutting Atualizada
             totalCalories: 2050,
@@ -255,13 +258,13 @@
             cardioState: { hiit1: false, hiit2: false, hiit3: false },
             measurementHistory: [],
             bodyMeasurements: {},
-            planDates: { start: '27/10/2025', end: '22/12/2025' }, // Novas Datas
+            planDates: { start: '27/10/2025', end: '22/12/2025' },
             goals: { weight: '', bodyFat: '' },
             isLoading: true,
-            planIdentifier: 'v6.5_271025_html' // Identificador para cookies
+            planIdentifier: PLAN_IDENTIFIER
         };
         
-        let progressChart = null; // Variável global para a instância do Chart
+        let saveStatusTimer = null;
 
         // --- FUNÇÕES DE COOKIE ---
         function setCookie(name, value, days) {
@@ -273,15 +276,17 @@
             }
             let cookieString = name + "=";
             try {
-              cookieString += encodeURIComponent(JSON.stringify(value));
-            } catch(e) {
-              console.error("Erro ao codificar o cookie:", e);
-              return;
+                cookieString += encodeURIComponent(JSON.stringify(value));
+            } catch (e) {
+                console.error("Erro ao codificar o cookie:", e);
+                showSaveStatus("Erro ao salvar!", "error");
+                return;
             }
             cookieString += expires + "; path=/; SameSite=Lax";
-            
+
             if (cookieString.length > 4000) {
-                console.warn("Tamanho do cookie (" + cookieString.length + " bytes) é grande e pode exceder limites do navegador.");
+                console.warn("Tamanho do cookie é grande, pode não ser salvo corretamente.");
+                 showSaveStatus("Erro: Dados muito grandes para salvar!", "error");
             }
             document.cookie = cookieString;
         }
@@ -296,55 +301,73 @@
                     try {
                         return JSON.parse(decodeURIComponent(c.substring(nameEQ.length, c.length)));
                     } catch (e) {
-                        console.error("Erro ao decodificar/parsear cookie:", e, ". Retornando null.");
-                        return null; // Retorna null se o parse falhar
+                        console.error("Erro ao decodificar cookie:", e);
+                        return null; 
                     }
                 }
             }
             return null;
         }
 
-        // --- FUNÇÕES DE INICIALIZAÇÃO E RENDERIZAÇÃO ---
-        function initializeApp() {
-            loadStateFromCookie();
-            setupEventListeners();
-            selectInitialWorkout();
-            setDailyQuote();
-            renderApp();
-            console.log("App Inicializado com estado:", state);
+        function showSaveStatus(message, type = "success") {
+            const statusEl = document.getElementById('save-status');
+            if (saveStatusTimer) {
+                clearTimeout(saveStatusTimer); 
+            }
+            
+            statusEl.textContent = message;
+            statusEl.classList.remove('text-green-400', 'text-amber-400', 'text-red-500');
+            statusEl.style.opacity = 1;
+
+            if (type === "success") {
+                statusEl.classList.add('text-green-400');
+            } else if (type === "saving") {
+                statusEl.classList.add('text-amber-400');
+            } else { // error
+                statusEl.classList.add('text-red-500');
+            }
+
+            if (type !== "error") { 
+                saveStatusTimer = setTimeout(() => {
+                    statusEl.style.opacity = 0;
+                }, 2000); 
+            }
         }
-        
-        // Função para inicializar o estado de setDetails
-        function initializeSetDetails(workouts) {
-            return workouts.map(w => ({
-                ...w,
-                exercises: w.exercises.map(ex => {
-                    const correctLength = ex.sets;
-                    if (ex.setDetails && ex.setDetails.length === correctLength) {
-                        return {
-                             ...ex,
-                             setDetails: ex.setDetails.map(s => ({
-                                 completed: s.completed || false,
-                                 weight: s.weight || ''
-                             }))
-                         };
-                    }
-                    return {
-                        ...ex,
-                        setDetails: Array(correctLength).fill({ completed: false, weight: '' })
+
+        function saveStateToCookie() {
+            showSaveStatus("Salvando...", "saving");
+            setTimeout(() => {
+                try {
+                    const stateToSave = {
+                        planIdentifier: state.planIdentifier,
+                        workoutsData: state.workoutsData,
+                        completedWorkoutsCount: state.completedWorkoutsCount,
+                        lastWorkoutStats: state.lastWorkoutStats,
+                        warmupState: state.warmupState,
+                        cardioState: state.cardioState,
+                        measurementHistory: state.measurementHistory,
+                        bodyMeasurements: state.bodyMeasurements,
+                        planDates: state.planDates,
+                        goals: state.goals
                     };
-                })
-            }));
+                    setCookie(COOKIE_NAME, stateToSave, 365);
+                    showSaveStatus("Salvo no navegador!", "success");
+
+                } catch (e) {
+                    console.error("Erro ao salvar cookie:", e);
+                    showSaveStatus("Erro ao salvar!", "error");
+                }
+            }, 100); 
         }
 
         function loadStateFromCookie() {
             const savedState = getCookie(COOKIE_NAME);
             if (savedState && savedState.planIdentifier === state.planIdentifier) {
-                 state = {
-                    ...state,
-                    ...savedState,
+                state = {
+                    ...state, 
+                    ...savedState, 
                     workoutsData: initializeSetDetails(savedState.workoutsData || initialWorkouts),
-                    planDates: state.planDates, // Mantém datas fixas do novo plano
+                    planDates: state.planDates, 
                     isLoading: false
                 };
                 if (!state.measurementHistory || state.measurementHistory.length === 0) {
@@ -361,18 +384,19 @@
                 state.isLoading = false;
             }
         }
-        
-        function saveStateToCookie() {
-            // Não salva o estado de loading ou timer
-            const stateToSave = { ...state };
-            delete stateToSave.isLoading;
-            delete stateToSave.timer; 
-            setCookie(COOKIE_NAME, stateToSave, 365);
+
+        // --- FUNÇÕES DE INICIALIZAÇÃO E RENDERIZAÇÃO ---
+        function initializeApp() {
+            loadStateFromCookie();
+            setupEventListeners();
+            selectInitialWorkout();
+            setDailyQuote();
+            renderApp();
+            console.log("App Inicializado com estado:", state);
         }
 
         function renderApp() {
             if (state.isLoading) return; 
-
             renderHeader();
             renderTotalProgress();
             renderTabs();
@@ -407,8 +431,10 @@
             document.querySelectorAll('.view').forEach(viewElement => {
                 if (viewElement.id === `${state.view}-view`) {
                     viewElement.classList.remove('hidden');
+                    viewElement.classList.add('active-view');
                 } else {
                     viewElement.classList.add('hidden');
+                    viewElement.classList.remove('active-view');
                 }
             });
         }
@@ -454,8 +480,7 @@
                  option.addEventListener('click', () => {
                      state.selectedWorkoutId = option.dataset.id;
                      document.getElementById('workout-dropdown').classList.remove('show');
-                     renderWorkoutView();
-                     renderWeeklyCalendar(); // Atualiza o calendário também
+                     renderWorkoutView(); 
                      saveStateToCookie();
                  });
              });
@@ -499,12 +524,23 @@
 
         function renderSelectedWorkout() {
             const container = document.getElementById('workout-day-content');
-            const workout = state.workoutsData.find(w => w.id === state.selectedWorkoutId);
+            let workout = state.workoutsData.find(w => w.id === state.selectedWorkoutId);
 
             if (!workout) {
                 container.innerHTML = '<p>Selecione um treino para começar.</p>';
                 return;
             }
+
+            // *** CORREÇÃO APLICADA AQUI ***
+            // Garante que setDetails está inicializado CORRETAMENTE para o treino selecionado
+            // Esta é a função-chave que cria cópias únicas dos objetos de série
+            workout.exercises = workout.exercises.map(ex => ({
+                ...ex,
+                setDetails: (ex.setDetails && ex.setDetails.length === ex.sets)
+                            ? ex.setDetails.map(s => ({...s})) // Garante cópias independentes
+                            : Array.from({ length: ex.sets }, () => ({ completed: false, weight: '' })) // Cria objetos únicos
+            }));
+
 
             const totalSets = workout.exercises.reduce((acc, ex) => acc + ex.sets, 0);
             const completedSetsCount = workout.exercises.reduce((acc, ex) => acc + (ex.setDetails ? ex.setDetails.filter(s => s.completed).length : 0), 0);
@@ -533,7 +569,7 @@
                             <img src="${exercise.image}" alt="Animação de ${exercise.name}" class="w-20 h-20 rounded-lg object-cover border-2 border-gray-600 cursor-pointer exercise-image" data-src="${exercise.image}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/1F2937/FFFFFF?text=Erro';" />
                         </div>
                         <div class="mt-4 space-y-3">
-                            ${(exercise.setDetails && exercise.setDetails.length === exercise.sets ? exercise.setDetails : Array(exercise.sets).fill({ completed: false, weight: '' })).map((set, setIndex) => `
+                            ${exercise.setDetails.map((set, setIndex) => `
                                 <div class="flex items-center justify-between p-3 rounded-lg ${set.completed ? 'bg-green-900/50' : 'bg-gray-700'}">
                                     <span class="font-semibold text-white w-1/4">Série ${setIndex + 1}</span>
                                     <div class="w-1/2 flex items-center">
@@ -569,8 +605,6 @@
         function renderDietView() {
             const container = document.getElementById('dieta-view');
             const { totalCalories, macros, meals, rules } = mealPlanData;
-
-             // ÍCONES SVG COMO STRINGS (CORREÇÃO)
              const getIconSvg = (iconName, classes = "w-5 h-5") => {
                  switch(iconName) {
                     case 'dumbbell': return `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes} mr-3 mt-0.5 text-cyan-400 flex-shrink-0"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m6 2 4 4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/><path d="M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0"/></svg>`;
@@ -615,12 +649,12 @@
                         </div>
                     `).join('')}
                 </div>
-                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mt-6">
-                   <h3 class="text-lg font-bold text-cyan-400 mb-3 flex items-center">${getIconSvg('bookOpen', 'w-5 h-5 mr-2')} Regras do Jogo</h3>
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mt-6">
+                   <h3 class="text-lg font-bold text-cyan-400 mb-3 flex items-center">${getIconSvg('bookOpen')} Regras do Jogo</h3>
                    <ul class="space-y-2">
                       ${rules.map(rule => `
                          <li class="flex items-start text-sm">
-                            ${getIconSvg(rule.icon, 'w-5 h-5 mr-3 mt-0.5 text-cyan-400 flex-shrink-0')}
+                            ${getIconSvg(rule.icon)}
                             <span class="text-gray-300">${rule.text}</span>
                          </li>
                        `).join('')}
@@ -630,6 +664,7 @@
         }
 
         // --- RENDERIZAÇÃO: PROGRESSO ---
+        let progressChart = null; 
         function renderProgressView() {
             const container = document.getElementById('progresso-view');
             container.innerHTML = `
@@ -654,30 +689,19 @@
                 </div>
                 ${renderCardioHTML()}
             `;
-            // Registrar o plugin de anotações (necessário para Chart.js 3)
-            if (window.ChartAnnotation) {
-                 Chart.register(window.ChartAnnotation);
-            }
             renderChart();
             attachProgressEventListeners();
         }
 
         function renderBodyStatsHTML() {
-             // CORREÇÃO: Usar strings para ícones
              const stats = [
-                { icon: 'user', label: "Nome", value: "Fábio" }, { icon: 'cake', label: "Idade", value: "35 anos" }, 
-                { icon: 'scale', label: "Peso Atual", value: `${state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length-1].peso : 74.7} kg` },
-                { icon: 'activity', label: "Altura", value: "1.70 m" }, 
-                { icon: 'target', label: "IMC Atual", value: calculateIMC(state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length-1].peso : 74.7) },
+                { icon: 'user', label: "Nome", value: "Fábio" }, { icon: 'cake', label: "Idade", value: "35 anos" }, { icon: 'scale', label: "Peso Atual", value: `${state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length-1].peso : 74.7} kg` },
+                { icon: 'activity', label: "Altura", value: "1.70 m" }, { icon: 'target', label: "IMC Atual", value: calculateIMC(state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length-1].peso : 74.7) },
                 { icon: 'flame', label: "Gordura Corporal", value: `${state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length-1].gordura : 21.1}%` },
-                { icon: 'dumbbell', label: "Músculos", value: "38.9 kg" }, 
-                { icon: 'shield', label: "Gordura Visceral", value: "9" }, 
-                { icon: 'heart', label: "Metabolismo Basal", value: "1700 Kcal" },
+                { icon: 'dumbbell', label: "Músculos", value: "38.9 kg" }, { icon: 'shield', label: "Gordura Visceral", value: "9" }, { icon: 'heart', label: "Metabolismo Basal", value: "1700 Kcal" },
             ];
-             
-             // CORREÇÃO: Função de ícone SVG
               const getStatIconSvg = (iconName, classes = "text-cyan-400 mb-1 w-6 h-6") => {
-                 switch(iconName){
+                  switch(iconName){
                      case 'user': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
                      case 'cake': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="M20 21v-8a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v8"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-1 4-1 2.5 2 4 2 2-1 2-1"/><path d="M12 4v4"/><path d="M12 8a2 2 0 0 0-2 2v2"/><path d="M14 10a2 2 0 0 1 2-2v4"/></svg>`;
                      case 'scale': return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/></svg>`;
@@ -765,11 +789,10 @@
         function renderCheckboxHTML(id, label, checked, details, iconName) {
              const getCheckIcon = (classes = "w-4 h-4 text-white") => `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes}"><path d="M20 6 9 17l-5-5"/></svg>`;
              const getCheckboxIcon = (iconName, classes = "mr-3 w-5 h-5") => {
-                  const combinedClasses = `${classes} ${checked ? 'text-green-400' : 'text-cyan-400'}`;
                   switch(iconName){
-                     case 'wind': return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${combinedClasses}"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>`;
-                     case 'repeat': return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${combinedClasses}"><path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 0 1 4-4h12"/><path d="M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 0 1-4 4H5"/></svg>`;
-                     case 'zap': return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${combinedClasses}"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>`;
+                     case 'wind': return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes} ${checked ? 'text-green-400' : 'text-cyan-400'}"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>`;
+                     case 'repeat': return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes} ${checked ? 'text-green-400' : 'text-cyan-400'}"><path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 0 1 4-4h12"/><path d="M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 0 1-4 4H5"/></svg>`;
+                     case 'zap': return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${classes} ${checked ? 'text-green-400' : 'text-cyan-400'}"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>`;
                      default: return '';
                   }
              };
@@ -792,7 +815,7 @@
 
          function renderChart() {
             const ctx = document.getElementById('progressChart');
-            if (!ctx) return;
+            if (!ctx) return; 
 
              if (progressChart) {
                  progressChart.destroy();
@@ -803,13 +826,12 @@
             const weightData = history.map(item => item.peso);
             const fatData = history.map(item => item.gordura);
 
-            // Preparar annotations (linhas de meta)
             const annotations = {};
-            if (state.goals.weight && parseFloat(state.goals.weight) > 0) {
+            if (state.goals.weight) {
                 annotations['goalWeightLine'] = {
                     type: 'line',
-                    yMin: parseFloat(state.goals.weight),
-                    yMax: parseFloat(state.goals.weight),
+                    yMin: state.goals.weight,
+                    yMax: state.goals.weight,
                     borderColor: '#F6E05E',
                     borderWidth: 2,
                     borderDash: [6, 6],
@@ -821,15 +843,15 @@
                         color: '#F6E05E',
                         font: { size: 10 }
                     },
-                    yScaleID: 'yLeft',
+                    yScaleID: 'yLeft', 
                 };
             }
-             if (state.goals.bodyFat && parseFloat(state.goals.bodyFat) > 0) {
+             if (state.goals.bodyFat) {
                  annotations['goalFatLine'] = {
                      type: 'line',
-                     yMin: parseFloat(state.goals.bodyFat),
-                     yMax: parseFloat(state.goals.bodyFat),
-                     borderColor: '#F6E05E',
+                     yMin: state.goals.bodyFat,
+                     yMax: state.goals.bodyFat,
+                     borderColor: '#F6E05E', 
                      borderWidth: 2,
                      borderDash: [6, 6],
                      label: {
@@ -840,7 +862,7 @@
                          color: '#F6E05E',
                          font: { size: 10 }
                      },
-                     yScaleID: 'yRight',
+                     yScaleID: 'yRight', 
                  };
              }
 
@@ -852,14 +874,14 @@
                         {
                             label: 'Peso (kg)',
                             data: weightData,
-                            borderColor: '#8884d8',
+                            borderColor: '#8884d8', // Roxo
                             tension: 0.1,
                             yAxisID: 'yLeft',
                         },
                         {
                             label: 'Gordura Corporal (%)',
                             data: fatData,
-                            borderColor: '#4FD1C5',
+                            borderColor: '#4FD1C5', // Cyan
                             tension: 0.1,
                             yAxisID: 'yRight',
                         }
@@ -868,27 +890,39 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    color: '#A0AEC0',
+                    color: '#A0AEC0', 
                      scales: {
-                        x: { ticks: { color: '#A0AEC0' }, grid: { color: '#4A5568' } },
+                        x: {
+                            ticks: { color: '#A0AEC0' },
+                            grid: { color: '#4A5568' }
+                        },
                         yLeft: {
-                            type: 'linear', position: 'left',
+                            type: 'linear',
+                            position: 'left',
                             title: { display: true, text: 'Peso (kg)', color: '#A0AEC0' },
-                            ticks: { color: '#A0AEC0' }, grid: { color: '#4A5568' }
+                            ticks: { color: '#A0AEC0' },
+                            grid: { color: '#4A5568' }
                         },
                         yRight: {
-                            type: 'linear', position: 'right',
+                            type: 'linear',
+                            position: 'right',
                             title: { display: true, text: 'Gordura (%)', color: '#4FD1C5' },
-                            ticks: { color: '#4FD1C5' }, grid: { drawOnChartArea: false }
+                            ticks: { color: '#4FD1C5' },
+                            grid: { drawOnChartArea: false } 
                         }
                     },
                     plugins: {
                         legend: { labels: { color: '#A0AEC0' } },
                         tooltip: {
-                           backgroundColor: '#1A202C', titleColor: '#FFFFFF',
-                           bodyColor: '#A0AEC0', borderColor: '#4A5568', borderWidth: 1
+                           backgroundColor: '#1A202C',
+                           titleColor: '#FFFFFF',
+                           bodyColor: '#A0AEC0',
+                           borderColor: '#4A5568',
+                           borderWidth: 1
                         },
-                        annotation: { annotations: annotations }
+                        annotation: { 
+                           annotations: annotations
+                        }
                     }
                 }
             });
@@ -901,7 +935,7 @@
             document.querySelectorAll('.view-tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     state.view = tab.dataset.view;
-                    renderApp(); // Re-renderiza tudo para trocar a view
+                    renderApp(); 
                     saveStateToCookie();
                 });
             });
@@ -916,49 +950,51 @@
                  }
             });
 
+
             // Timer
             document.getElementById('timer-stop-button').addEventListener('click', () => stopTimer(false));
+             // Fechar modal da imagem
              document.getElementById('image-modal').addEventListener('click', () => closeImageModal());
              document.getElementById('image-modal-close').addEventListener('click', () => closeImageModal());
 
-             attachWorkoutEventListeners(); // Lida com conteúdo dinâmico do treino
-             attachProgressEventListeners(); // Lida com conteúdo dinâmico do progresso
+             attachWorkoutEventListeners();
+             attachProgressEventListeners();
         }
 
         function attachWorkoutEventListeners() {
             document.querySelectorAll('.set-toggle').forEach(button => {
-                button.onclick = () => {
+                button.addEventListener('click', () => {
                     const exIndex = parseInt(button.dataset.ex);
                     const setIndex = parseInt(button.dataset.set);
                     handleSetToggle(exIndex, setIndex);
-                };
+                });
             });
             document.querySelectorAll('.set-weight').forEach(input => {
-                input.onchange = () => { // Usar onchange para salvar quando sair do campo
+                input.addEventListener('change', () => { 
                     const exIndex = parseInt(input.dataset.ex);
                     const setIndex = parseInt(input.dataset.set);
                     handleWeightChange(exIndex, setIndex, input.value);
-                };
+                });
             });
              document.querySelectorAll('.start-timer').forEach(button => {
-                 button.onclick = () => {
+                 button.addEventListener('click', () => {
                      const duration = parseInt(button.dataset.rest);
                      startTimer(duration);
-                 };
+                 });
              });
               const finishButton = document.getElementById('finish-workout-button');
               if (finishButton) {
-                  finishButton.onclick = handleFinishWorkout;
+                  finishButton.addEventListener('click', handleFinishWorkout);
               }
                document.querySelectorAll('.exercise-image').forEach(img => {
-                   img.onclick = () => openImageModal(img.dataset.src);
+                   img.addEventListener('click', () => openImageModal(img.dataset.src));
                });
         }
         
          function attachProgressEventListeners() {
              const measurementForm = document.getElementById('measurement-form');
              if (measurementForm) {
-                 measurementForm.onsubmit = (e) => {
+                 measurementForm.addEventListener('submit', (e) => {
                      e.preventDefault();
                      const weightInput = document.getElementById('current-weight');
                      const fatInput = document.getElementById('current-fat');
@@ -967,36 +1003,38 @@
                          weightInput.value = '';
                          fatInput.value = '';
                      }
-                 };
+                 });
              }
              document.querySelectorAll('.body-measurement-input').forEach(input => {
-                 input.onchange = () => {
+                 input.addEventListener('change', () => { 
                      handleBodyMeasurementChange(input.dataset.key, input.value);
-                 };
+                 });
              });
              document.querySelectorAll('.goal-input').forEach(input => {
-                  input.onchange = () => {
-                     const key = input.id.split('-')[1];
+                  input.addEventListener('change', () => {
+                     const key = input.id.split('-')[1]; 
                      handleGoalChange(key, input.value);
-                     renderChart();
-                  };
+                     renderChart(); 
+                  });
              });
               document.querySelectorAll('.checkbox-container[id^="cardio-"]').forEach(checkbox => {
-                 checkbox.onclick = () => {
-                     const key = checkbox.id.split('-')[1];
+                 checkbox.addEventListener('click', () => {
+                     const key = checkbox.id.split('-')[1]; 
                      handleCardioToggle(key);
-                 };
+                 });
               });
          }
 
         function selectInitialWorkout() {
-            const isValid = state.selectedWorkoutId && initialWorkouts.some(w => w.id === state.selectedWorkoutId);
-            if (isValid) {
-                return;
-            }
-            const dayIndex = (new Date().getDay() + 6) % 7;
+            const dayIndex = (new Date().getDay() + 6) % 7; 
             const todayWorkout = initialWorkouts[dayIndex];
-            state.selectedWorkoutId = todayWorkout ? todayWorkout.id : initialWorkouts[0].id;
+            
+            const savedState = getCookie(COOKIE_NAME);
+             if (savedState && savedState.selectedWorkoutId && initialWorkouts.some(w => w.id === savedState.selectedWorkoutId)) {
+                 state.selectedWorkoutId = savedState.selectedWorkoutId;
+             } else {
+                 state.selectedWorkoutId = todayWorkout ? todayWorkout.id : initialWorkouts[0].id; 
+             }
         }
 
         function setDailyQuote() {
@@ -1007,7 +1045,7 @@
              } else {
                  const newQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
                  state.dailyQuote = newQuote;
-                 setCookie('dailyQuoteData', { quote: newQuote, date: todayStr }, 1);
+                 setCookie('dailyQuoteData', { quote: newQuote, date: todayStr }, 1); 
              }
         }
 
@@ -1019,10 +1057,17 @@
             if (workout) {
                 const exercise = workout.exercises[exIndex];
                 if (exercise && exercise.setDetails && exercise.setDetails[setIndex]) {
-                    exercise.setDetails[setIndex].completed = !exercise.setDetails[setIndex].completed;
-                    renderSelectedWorkout();
+                    // *** CORREÇÃO APLICADA AQUI ***
+                    // Cria uma nova cópia de setDetails para garantir a re-renderização
+                    const newSetDetails = [...exercise.setDetails];
+                    newSetDetails[setIndex] = { ...newSetDetails[setIndex], completed: !newSetDetails[setIndex].completed };
+                    exercise.setDetails = newSetDetails;
+                    
+                    renderSelectedWorkout(); 
                     saveStateToCookie();
-                }
+                } else {
+                    console.error("Erro ao encontrar exercício/set para toggle:", exIndex, setIndex, workout);
+                 }
             }
         }
 
@@ -1031,8 +1076,15 @@
              if (workout) {
                  const exercise = workout.exercises[exIndex];
                  if (exercise && exercise.setDetails && exercise.setDetails[setIndex]) {
-                     exercise.setDetails[setIndex].weight = weight;
-                     saveStateToCookie();
+                    // *** CORREÇÃO APLICADA AQUI ***
+                    // Cria uma nova cópia de setDetails
+                    const newSetDetails = [...exercise.setDetails];
+                    newSetDetails[setIndex] = { ...newSetDetails[setIndex], weight: weight };
+                    exercise.setDetails = newSetDetails;
+                     
+                    saveStateToCookie();
+                 } else {
+                    console.error("Erro ao encontrar exercício/set para peso:", exIndex, setIndex, workout);
                  }
              }
         }
@@ -1042,7 +1094,7 @@
              if (!startTime) return; 
 
              const durationSeconds = Math.round((Date.now() - startTime) / 1000);
-             const currentWeightKg = state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length - 1].peso : 74.7;
+             const currentWeightKg = state.measurementHistory.length > 0 ? state.measurementHistory[state.measurementHistory.length - 1].peso : 74.7; 
              const caloriesBurned = durationSeconds > 0 ? Math.round((MET_VALUE * 3.5 * currentWeightKg / 200) * (durationSeconds / 60)) : 0;
 
              state.lastWorkoutStats = {
@@ -1053,8 +1105,8 @@
              state.completedWorkoutsCount += 1;
              state.activeWorkout.startTime = null; 
 
-             renderSelectedWorkout();
-             renderTotalProgress();
+             renderSelectedWorkout(); 
+             renderTotalProgress(); 
              saveStateToCookie();
          }
         
@@ -1064,27 +1116,22 @@
                  peso,
                  gordura
              });
-             renderChart();
-             // Atualiza os stats exibidos
-             const statsContainer = document.getElementById('progresso-view');
-             if (statsContainer) {
-                 statsContainer.querySelector('#body-stats-container').innerHTML = renderBodyStatsHTML();
-             }
+             renderChart(); 
+             renderProgressView(); 
              saveStateToCookie();
          }
 
          function handleWarmupToggle(key) {
              state.warmupState[key] = !state.warmupState[key];
-             renderWarmupSection();
+             renderWarmupSection(); 
              saveStateToCookie();
          }
 
          function handleCardioToggle(key) {
              state.cardioState[key] = !state.cardioState[key];
-              if (state.view === 'progresso') {
-                 // A forma mais simples é re-renderizar a view
-                 renderProgressView();
-              }
+             if (state.view === 'progresso') {
+                renderProgressView();
+             }
              saveStateToCookie();
          }
 
@@ -1095,14 +1142,13 @@
          
          function handleGoalChange(key, value) {
              state.goals[key] = value;
-             renderChart(); // Atualiza o gráfico com a nova meta
              saveStateToCookie();
          }
 
         // --- LÓGICA DO TIMER ---
         function startTimer(duration) {
-            if (state.timer.active) return;
-            clearInterval(state.timer.intervalId);
+            if (state.timer.active) return; 
+            clearInterval(state.timer.intervalId); 
             state.timer = { active: true, duration: duration, timeLeft: duration, intervalId: null };
             updateTimerDisplay();
             document.getElementById('timer-modal').classList.add('show');
@@ -1111,7 +1157,7 @@
                 state.timer.timeLeft -= 1;
                 updateTimerDisplay();
                 if (state.timer.timeLeft <= 0) {
-                    stopTimer(true);
+                    stopTimer(true); 
                 }
             }, 1000);
         }
@@ -1127,7 +1173,6 @@
 
         function updateTimerDisplay() {
             const timeElement = document.getElementById('timer-time');
-            if (!timeElement) return;
             const minutes = Math.floor(state.timer.timeLeft / 60);
             const seconds = state.timer.timeLeft % 60;
             timeElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
@@ -1138,14 +1183,17 @@
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 1);
+
+                oscillator.type = 'sine'; 
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime); 
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime); 
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 1); 
+
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
+
                 oscillator.start();
-                oscillator.stop(audioContext.currentTime + 1);
+                oscillator.stop(audioContext.currentTime + 1); 
             } catch (e) {
                 console.error("Não foi possível tocar o som do timer:", e);
             }
@@ -1159,7 +1207,7 @@
 
          function closeImageModal() {
              document.getElementById('image-modal').classList.remove('show');
-             document.getElementById('modal-image-element').src = "";
+             document.getElementById('modal-image-element').src = ""; 
          }
 
         // --- FUNÇÕES UTILITÁRIAS ---
@@ -1174,6 +1222,33 @@
             const heightM = 1.70;
             return (weight / (heightM * heightM)).toFixed(1);
         }
+        
+         // *** CORREÇÃO DEFINITIVA DO BUG ***
+         function initializeSetDetails(workouts) {
+            if (!workouts) return []; // Retorna array vazio se workouts for undefined
+             return workouts.map(w => ({
+                 ...w,
+                 exercises: w.exercises.map(ex => {
+                     // Se os dados salvos existirem e tiverem o tamanho correto
+                     if (ex.setDetails && ex.setDetails.length === ex.sets) {
+                         // Garante que são cópias independentes
+                         return {
+                             ...ex,
+                             setDetails: ex.setDetails.map(s => ({
+                                 completed: s.completed || false,
+                                 weight: s.weight || ''
+                             }))
+                         };
+                     }
+                     // Se não existir ou estiver incorreto, cria um novo array com OBJETOS ÚNICOS
+                     return {
+                         ...ex,
+                         setDetails: Array.from({ length: ex.sets }, () => ({ completed: false, weight: '' }))
+                     };
+                 })
+             }));
+         }
+
 
         // --- INICIALIZAÇÃO QUANDO O DOM ESTIVER PRONTO ---
         document.addEventListener('DOMContentLoaded', initializeApp);
