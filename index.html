@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- NOVO: Adicionado para prevenir indexação pelo Google -->
+    <meta name="robots" content="noindex, nofollow">
+    
     <title>Plano Performance - Fábio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
@@ -57,7 +60,6 @@
             <h2 class="text-xl font-semibold text-cyan-400 mt-1 mb-2">para Fábio</h2>
             
             <!-- Indicador de Salvamento Removido -->
-            <!-- <div id="save-status" class="h-4 text-sm transition-opacity duration-1000 ease-out"></div> -->
             <p id="daily-quote" class="text-gray-400 italic mt-2">Carregando citação...</p>
         </header>
 
@@ -310,9 +312,8 @@
             return null;
         }
 
-        // --- FUNÇÃO DE STATUS DE SALVAMENTO (MODIFICADA) ---
+        // --- FUNÇÃO DE STATUS DE SALVAMENTO (DESATIVADA VISUALMENTE) ---
         function showSaveStatus(message, type = "success") {
-            // Função desativada a pedido do usuário, mantendo os logs
             if (type === 'error') {
                  console.error(message);
             } else if (type === 'saving') {
@@ -320,32 +321,6 @@
             } else {
                  console.log(message);
             }
-            
-            /*
-            const statusEl = document.getElementById('save-status');
-            if (!statusEl) return; // Se o elemento não existe, não faz nada
-            if (saveStatusTimer) {
-                clearTimeout(saveStatusTimer); 
-            }
-            
-            statusEl.textContent = message;
-            statusEl.classList.remove('text-green-400', 'text-amber-400', 'text-red-500');
-            statusEl.style.opacity = 1;
-
-            if (type === "success") {
-                statusEl.classList.add('text-green-400');
-            } else if (type === "saving") {
-                statusEl.classList.add('text-amber-400');
-            } else { // error
-                statusEl.classList.add('text-red-500');
-            }
-
-            if (type !== "error") { 
-                saveStatusTimer = setTimeout(() => {
-                    statusEl.style.opacity = 0;
-                }, 2000); 
-            }
-            */
         }
 
         function saveStateToCookie() {
@@ -545,14 +520,11 @@
                 return;
             }
 
-            // *** CORREÇÃO APLICADA AQUI ***
-            // Garante que setDetails está inicializado CORRETAMENTE para o treino selecionado
-            // Esta é a função-chave que cria cópias únicas dos objetos de série
             workout.exercises = workout.exercises.map(ex => ({
                 ...ex,
                 setDetails: (ex.setDetails && ex.setDetails.length === ex.sets)
-                            ? ex.setDetails.map(s => ({...s})) // Garante cópias independentes
-                            : Array.from({ length: ex.sets }, () => ({ completed: false, weight: '' })) // Cria objetos únicos
+                            ? ex.setDetails.map(s => ({...s})) 
+                            : Array.from({ length: ex.sets }, () => ({ completed: false, weight: '' })) 
             }));
 
 
@@ -1071,8 +1043,6 @@
             if (workout) {
                 const exercise = workout.exercises[exIndex];
                 if (exercise && exercise.setDetails && exercise.setDetails[setIndex]) {
-                    // *** CORREÇÃO APLICADA AQUI ***
-                    // Cria uma nova cópia de setDetails para garantir a re-renderização
                     const newSetDetails = [...exercise.setDetails];
                     newSetDetails[setIndex] = { ...newSetDetails[setIndex], completed: !newSetDetails[setIndex].completed };
                     exercise.setDetails = newSetDetails;
@@ -1149,7 +1119,8 @@
 
          function handleBodyMeasurementChange(key, value) {
              state.bodyMeasurements[key] = value;
-             saveStateToCookie();
+             saveStateToCode_output
+kie();
          }
          
          function handleGoalChange(key, value) {
