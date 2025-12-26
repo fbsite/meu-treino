@@ -43,12 +43,12 @@
         <div class="bg-gray-800 p-4 rounded-2xl border border-white/5 mb-6 shadow-xl">
             <div class="flex justify-between items-center text-center">
                 <div>
-                    <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Início</p>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Início do Ciclo</p>
                     <p class="text-sm font-bold text-white">29/12/2025</p>
                 </div>
                 <div class="h-6 w-px bg-gray-700"></div>
                 <div>
-                    <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Fim do Ciclo</p>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Meta 10% BF</p>
                     <p class="text-sm font-bold text-cyan-400">01/03/2026</p>
                 </div>
             </div>
@@ -66,7 +66,7 @@
             <div id="view-treino" class="view-content">
                 <div class="relative mb-4">
                     <button onclick="toggleWorkoutDropdown()" class="w-full bg-gray-800 border border-white/5 rounded-2xl px-5 py-4 text-left flex justify-between items-center shadow-lg">
-                        <span id="display-workout-name" class="font-bold text-sm text-cyan-400">A: Peito & Deltoide</span>
+                        <span id="display-workout-name" class="font-bold text-sm text-cyan-400">Carregando...</span>
                         <svg id="dropdown-icon" class="transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                     </button>
                     <div id="workout-dropdown" class="dropdown-content absolute top-full left-0 right-0 bg-gray-800 border border-white/10 mt-2 rounded-2xl z-50 shadow-2xl overflow-hidden"></div>
@@ -86,10 +86,9 @@
 
             <!-- View: Progresso -->
             <div id="view-progresso" class="view-content hidden">
-                <!-- Informações do Usuário -->
-                <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg mb-6">
+                <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg mb-6 text-center">
                     <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/5">
-                         <div class="flex flex-col">
+                         <div class="flex flex-col text-left">
                             <span class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Idade</span>
                             <span class="text-sm font-bold">35 Anos</span>
                         </div>
@@ -100,51 +99,49 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center">
+                        <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center shadow-inner">
                             <p class="text-[9px] text-gray-500 uppercase mb-1">Peso Atual</p>
-                            <p id="current-weight-card" class="text-xl font-bold">--</p>
+                            <p id="current-weight-card" class="text-xl font-bold text-white">74.7kg</p>
                         </div>
-                        <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center">
+                        <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center shadow-inner">
                             <p class="text-[9px] text-gray-500 uppercase mb-1">Gordura Atual</p>
-                            <p id="current-fat-card" class="text-xl font-bold text-cyan-400">--</p>
+                            <p id="current-fat-card" class="text-xl font-bold text-cyan-400">21.1%</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5 text-center">
+                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5">
                             <p class="text-[8px] text-gray-500 uppercase">Músculo</p>
-                            <p class="text-xs font-bold">38.9kg</p>
+                            <p class="text-xs font-bold text-white">38.9kg</p>
                         </div>
-                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5 text-center">
+                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5">
                             <p class="text-[8px] text-gray-500 uppercase">Visceral</p>
-                            <p class="text-xs font-bold">9</p>
+                            <p class="text-xs font-bold text-white">9</p>
                         </div>
-                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5 text-center">
+                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5">
                             <p class="text-[8px] text-gray-500 uppercase">Basal</p>
-                            <p class="text-xs font-bold">1700<span class="text-[8px]">kcal</span></p>
+                            <p class="text-xs font-bold text-white">1700kcal</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Novo Registro (Corrigido para não vazar da tela) -->
                 <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg mb-6">
                     <h3 class="text-xs font-bold text-gray-400 mb-4 uppercase text-center tracking-widest">Novo Registro</h3>
-                    <div class="space-y-4">
+                    <div class="flex flex-col gap-4">
                         <div class="flex gap-3">
-                            <div class="flex-1 min-w-0">
-                                <label class="block text-[9px] text-gray-500 uppercase font-bold mb-1 ml-1">Peso (kg)</label>
-                                <input id="input-weight" type="number" step="0.1" placeholder="00.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-white outline-none focus:border-cyan-400">
+                            <div class="w-1/2">
+                                <label class="block text-[8px] text-gray-500 uppercase font-bold mb-1 ml-1">Peso (kg)</label>
+                                <input id="input-weight" type="number" step="0.1" placeholder="00.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-white outline-none focus:border-cyan-400 transition-all">
                             </div>
-                            <div class="flex-1 min-w-0">
-                                <label class="block text-[9px] text-gray-500 uppercase font-bold mb-1 ml-1">BF (%)</label>
-                                <input id="input-fat" type="number" step="0.1" placeholder="00.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-cyan-400 outline-none focus:border-cyan-400">
+                            <div class="w-1/2">
+                                <label class="block text-[8px] text-gray-500 uppercase font-bold mb-1 ml-1">Gordura (%)</label>
+                                <input id="input-fat" type="number" step="0.1" placeholder="00.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-cyan-400 outline-none focus:border-cyan-400 transition-all">
                             </div>
                         </div>
-                        <button onclick="addProgressEntry()" class="w-full bg-cyan-600 py-3.5 rounded-xl font-bold text-sm hover:bg-cyan-500 active:scale-95 transition-all shadow-lg">ADICIONAR AO HISTÓRICO</button>
+                        <button onclick="addProgressEntry()" class="w-full bg-cyan-600 py-3.5 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-cyan-500 active:scale-95 transition-all shadow-lg">Registrar Evolução</button>
                     </div>
                 </div>
 
-                <!-- Perímetros -->
                 <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg">
                     <h3 class="text-xs font-bold text-cyan-400 mb-4 uppercase tracking-widest text-center">Perímetros de Referência (cm)</h3>
                     <div id="perimeters-list" class="grid grid-cols-2 gap-x-4 gap-y-2"></div>
@@ -153,10 +150,10 @@
         </main>
 
         <!-- Modais -->
-        <div id="timer-modal" class="modal fixed inset-0 bg-black/90 items-center justify-center z-[100]">
+        <div id="timer-modal" class="modal fixed inset-0 bg-black/95 items-center justify-center z-[100]">
             <div class="bg-gray-800 rounded-[40px] p-10 text-center border border-cyan-500/20">
                 <h3 class="text-cyan-400 uppercase text-xs tracking-[0.3em] mb-4 font-bold">Descanso</h3>
-                <p id="timer-clock" class="text-7xl font-mono font-bold text-white mb-8">0:00</p>
+                <p id="timer-clock" class="text-7xl font-mono font-bold text-white mb-8 tracking-tighter">0:00</p>
                 <button onclick="skipTimer()" class="bg-white/5 text-white border border-white/10 px-12 py-2 rounded-full font-bold text-xs uppercase tracking-widest">Pular</button>
             </div>
         </div>
@@ -166,72 +163,72 @@
         </div>
 
         <footer class="text-center mt-12 text-gray-600">
-            <p class="text-[9px] uppercase tracking-[0.4em]">Fábio Performance App • v7.7</p>
+            <p class="text-[9px] uppercase tracking-[0.4em]">Fábio Performance App • v7.9</p>
         </footer>
     </div>
 
     <script>
-        // --- DATA ---
+        // --- DATA INTEGRAL (PROTOCOLO UPPER-MASS) ---
         const quotes = [
-            "A dor é temporária, a glória é eterna.",
-            "Visualiza os 10% de BF e não para até chegar lá.",
+            "Fábio, visualiza os 10% de BF todos os dias.",
+            "Consistência vence o talento. Todo santo dia.",
+            "Disciplina é a ponte entre metas e realizações.",
             "Não pare quando estiver cansado, pare quando terminar.",
-            "Disciplina é o que te leva onde o talento não alcança.",
-            "Sua única competição é quem você era ontem.",
-            "Fábio, cada repetição é um degrau rumo ao topo.",
-            "Cumpra o plano. Os resultados virão."
+            "Peito largo e braços fortes: foco total na técnica.",
+            "O sucesso é a soma de pequenos esforços diários.",
+            "Não negocie com a sua mente. Apenas faça."
         ];
 
         const workoutData = [
-            { id: 'a', day: 'Seg', name: 'A: Peito & Deltoide Frontal', exercises: [
-                { n: 'Supino Reto Barra', s: 5, r: '5', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif' },
-                { n: 'Supino Inclinado Halteres', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Bench-Press.gif' },
-                { n: 'Crucifixo Inclinado', s: 3, r: '12-15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Fly.gif' },
-                { n: 'Desenvolvimento Militar Barra', s: 4, r: '6-8', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Overhead-Press.gif' },
+            { id: 'a', day: 'Seg', name: 'A: Peito & Deltoide Frontal (Cargas)', exercises: [
+                { n: 'Supino Reto Barra', s: 5, r: '5', d: 150, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif', t: 'Foco em carga - Explosão' },
+                { n: 'Supino Inclinado Halteres', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Bench-Press.gif', t: 'Controlar descida 3s' },
+                { n: 'Desenvolvimento Militar Barra', s: 4, r: '6-8', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Overhead-Press.gif', t: 'Tronco firme, sem impulso' },
+                { n: 'Crucifixo Máquina / Polia', s: 3, r: '12-15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pec-Deck-Fly.gif', t: 'Pico de contração 2s' },
                 { n: 'Elevação Frontal Polia', s: 3, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Front-Raise.gif' }
             ]},
-            { id: 'b', day: 'Ter', name: 'B: Costas & Posterior Ombro', exercises: [
-                { n: 'Levantamento Terra', s: 5, r: '5', d: 150, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Deadlift.gif' },
-                { n: 'Remada Curvada Barra', s: 4, r: '8', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bent-Over-Row.gif' },
-                { n: 'Puxada Frente Aberta', s: 4, r: '10-12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif' },
-                { n: 'Remada Unilateral Halter', s: 3, r: '10-12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Row.gif' },
-                { n: 'Crucifixo Invertido', s: 4, r: '15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Rear-Lateral-Raise.gif' }
+            { id: 'b', day: 'Ter', name: 'B: Costas & Deltoide Posterior (Cargas)', exercises: [
+                { n: 'Levantamento Terra', s: 5, r: '5', d: 180, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Deadlift.gif', t: 'Escápulas travadas' },
+                { n: 'Remada Curvada Barra', s: 4, r: '8', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bent-Over-Row.gif', t: 'Tronco paralelo ao chão' },
+                { n: 'Barra Fixa', s: 4, r: 'Falha', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pull-up.gif', t: 'Carga extra se possível' },
+                { n: 'Crucifixo Invertido Halteres', s: 4, r: '15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Rear-Lateral-Raise.gif' },
+                { n: 'Encolhimento Barra Frente', s: 4, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Shrug.gif', t: 'Segurar 2s no topo' }
             ]},
-            { id: 'c', day: 'Qua', name: 'C: Inferiores (Quads Focus)', exercises: [
-                { n: 'Agachamento Livre', s: 4, r: '8', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Squat.gif' },
-                { n: 'Leg Press 45', s: 4, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/03/Leg-Press.gif' },
-                { n: 'Avanço Halteres', s: 3, r: '10-12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lunge.gif' },
-                { n: 'Cadeira Extensora', s: 4, r: '15', d: 60, g: 'https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/cadeira-extensora.gif' },
-                { n: 'Panturrilha em Pé', s: 5, r: '20', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Standing-Calf-Raise.gif' }
+            { id: 'c', day: 'Qua', name: 'C: Inferiores (Quadríceps Focus)', exercises: [
+                { n: 'Agachamento Livre', s: 4, r: '8', d: 150, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Squat.gif' },
+                { n: 'Leg Press 45 (Pés Baixos)', s: 4, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/03/Leg-Press.gif' },
+                { n: 'Cadeira Extensora', s: 4, r: '15 + DropSet', d: 60, g: 'https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/cadeira-extensora.gif', t: 'Drop-set na última série' },
+                { n: 'Passada Halteres', s: 3, r: '20 passos', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lunge.gif' },
+                { n: 'Panturrilha em Pé', s: 5, r: '15-20', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Standing-Calf-Raise.gif' }
             ]},
-            { id: 'd', day: 'Qui', name: 'D: Braços Completo', exercises: [
-                { n: 'Supino Fechado', s: 4, r: '8', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Close-Grip-Bench-Press.gif' },
-                { n: 'Rosca Direta Barra W', s: 4, r: '10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Curl.gif' },
-                { n: 'Tríceps Testa Polia', s: 3, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Triceps-Extension.gif' },
-                { n: 'Rosca Martelo', s: 3, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/Hammer-Curl.gif' },
-                { n: 'Tríceps Corda', s: 3, r: '15', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Triceps-Pushdown.gif' },
+            { id: 'd', day: 'Qui', name: 'D: Braços Completo (Hipertrofia)', exercises: [
+                { n: 'Supino Fechado (Tríceps)', s: 4, r: '8', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Close-Grip-Bench-Press.gif' },
+                { n: 'Rosca Direta Barra W', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Curl.gif' },
+                { n: 'Tríceps Testa + Supino Francês', s: 3, r: '10+10', d: 75, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Skullcrusher.gif', t: 'Super-série' },
+                { n: 'Rosca Martelo Halteres', s: 3, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/Hammer-Curl.gif' },
+                { n: 'Tríceps Corda Polia', s: 3, r: '15 + DropSet', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Triceps-Pushdown.gif' },
                 { n: 'Rosca Inversa Barra', s: 3, r: '15', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Reverse-Curl.gif' }
             ]},
-            { id: 'e', day: 'Sex', name: 'E: Peito & Costas (Power)', exercises: [
-                { n: 'Supino Reto Halteres', s: 4, r: '10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Bench-Press.gif' },
-                { n: 'Remada Barra T', s: 4, r: '10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/T-bar-Row.gif' },
-                { n: 'Supino Inclinado Barra', s: 3, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Barbell-Bench-Press.gif' },
-                { n: 'Puxada Triângulo', s: 3, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/puxada-frente-fechada-pulley-triangulo.gif' },
-                { n: 'Dips (Paralelas)', s: 3, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dip.gif' }
+            { id: 'e', day: 'Sex', name: 'E: Peito & Costas (Volume & Super-séries)', exercises: [
+                { n: 'Supino Inclinado Barra', s: 4, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Barbell-Bench-Press.gif' },
+                { n: 'Puxada Frente Aberta', s: 4, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif' },
+                { n: 'Paralelas (Peito Focus)', s: 3, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dip.gif', t: 'Tronco inclinado à frente' },
+                { n: 'Remada Sentada Neutra', s: 3, r: '15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Cable-Row.gif', t: 'Isometria 2s no pico' },
+                { n: 'Pullover Halter', s: 3, r: '15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Pullover.gif' }
             ]},
-            { id: 'f', day: 'Sáb', name: 'F: Ombros, Core & Pump', exercises: [
-                { n: 'Desenvolvimento Arnold', s: 4, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Arnold-Press.gif' },
-                { n: 'Elevação Lateral Halteres', s: 5, r: '15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif' },
+            { id: 'f', day: 'Sáb', name: 'F: Ombros, Core & Pump Braços', exercises: [
+                { n: 'Desenvolvimento Arnold', s: 4, r: '10-12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Arnold-Press.gif' },
+                { n: 'Elevação Lateral Halteres', s: 5, r: '15-20', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif', t: 'Rest-Pause na última série' },
                 { n: 'Face Pull', s: 4, r: '20', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Face-Pull.gif' },
-                { n: 'Abdominal Roda', s: 4, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Ab-Roller.gif' },
-                { n: 'Prancha Isométrica', s: 3, r: '1 min', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Plank.gif' }
+                { n: 'Rosca Concentrada', s: 3, r: '12', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Concentration-Curl.gif' },
+                { n: 'Abdominal Roda', s: 4, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Ab-Roller.gif' }
             ]}
         ];
 
         const diet = {
             kcal: 2050, p: 165, c: 190, g: 65,
             meals: [
-                { t: "07:00", n: "Café da Manhã", m: "30P|40C|12G", i: "4 claras + 2 ovos inteiros, 40g aveia, 1 banana" },
+                { t: "07:00", n: "Pequeno-almoço", m: "30P|40C|12G", i: "4 claras + 2 ovos inteiros, 40g aveia, 1 banana" },
                 { t: "10:00", n: "Lanche", m: "35P|30C|9G", i: "150g frango, 2 fatias pão integral, 10g pasta amendoim" },
                 { t: "13:00", n: "Almoço", m: "40P|30C|12G", i: "150g frango/patinho, 100g arroz integral, salada + azeite" },
                 { t: "16:30", n: "Pré-treino", m: "35P|35C|5G", i: "150g batata-doce, 150g frango/peixe" },
@@ -242,8 +239,8 @@
 
         const initialMeasures = { "Braço E": 35, "Braço D": 37, "Tórax": 93, "Abdome": 82, "Cintura": 84, "Coxa E": 59, "Coxa D": 60, "Pant. E": 38, "Pant. D": 38, "Ombro": 121 };
 
-        // --- ESTADO ---
-        const COOKIE_KEY = 'fabio_v7_7_final';
+        // --- STATE & STORAGE ---
+        const COOKIE_KEY = 'fabio_v7_9_final';
         let state = {
             tab: 'treino',
             workoutId: 'a',
@@ -288,7 +285,7 @@
 
             document.getElementById('perimeters-list').innerHTML = Object.entries(state.measures).map(([k, v]) => `
                 <div class="flex justify-between items-center py-2 border-b border-white/5">
-                    <span class="text-[9px] text-gray-500 uppercase">${k}</span>
+                    <span class="text-[9px] text-gray-400 uppercase tracking-tighter">${k}</span>
                     <span class="text-xs font-bold text-white">${v}cm</span>
                 </div>
             `).join('');
@@ -308,9 +305,22 @@
             save();
         }
 
+        function toggleWorkoutDropdown() {
+            document.getElementById('workout-dropdown').classList.toggle('show');
+            document.getElementById('dropdown-icon').classList.toggle('rotate-180');
+        }
+
+        function selectWorkout(id) {
+            state.workoutId = id;
+            document.getElementById('workout-dropdown').classList.remove('show');
+            renderWorkout();
+            save();
+        }
+
         function renderWorkout() {
             const current = workoutData.find(w => w.id === state.workoutId);
             document.getElementById('display-workout-name').textContent = current.name;
+
             document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`day-${state.workoutId}`).classList.add('active');
 
@@ -318,8 +328,12 @@
             list.innerHTML = current.exercises.map((ex, exIdx) => `
                 <div class="bg-gray-800 rounded-3xl p-5 border border-white/5 shadow-lg">
                     <div class="flex justify-between items-start mb-4">
-                        <div class="flex-1 pr-2"><h4 class="font-bold text-white text-base leading-tight">${ex.n}</h4><p class="text-[10px] text-gray-500 uppercase mt-1">${ex.s}x${ex.r} • ${ex.d}s</p></div>
-                        <img onclick="showFullImg('${ex.g}')" src="${ex.g}" class="w-14 h-14 rounded-xl object-cover bg-black/20" onerror="this.src='https://placehold.co/100?text=GIF'">
+                        <div class="flex-1 pr-2">
+                            <h4 class="font-bold text-white text-base leading-tight">${ex.n}</h4>
+                            <p class="text-[10px] text-gray-500 uppercase mt-1 tracking-widest">${ex.s} séries • ${ex.r} reps • ${ex.d}s</p>
+                            ${ex.t ? `<p class="text-[9px] text-amber-400 font-bold uppercase mt-1 italic tracking-tight">★ ${ex.t}</p>` : ''}
+                        </div>
+                        <img onclick="showFullImg('${ex.g}')" src="${ex.g}" class="w-14 h-14 rounded-xl object-cover bg-black/20 border border-white/10" onerror="this.src='https://placehold.co/100?text=GIF'">
                     </div>
                     <div class="space-y-2">
                         ${Array.from({length: ex.s}).map((_, sIdx) => {
@@ -327,12 +341,12 @@
                             const l = state.logs[k] || { done: false, kg: '' };
                             return `
                                 <div class="flex items-center gap-2">
-                                    <div class="bg-gray-900 rounded-2xl flex-1 flex items-center px-4 py-2 border border-white/5">
-                                        <span class="text-[9px] font-bold text-gray-600 mr-2">S${sIdx+1}</span>
+                                    <div class="bg-gray-900 rounded-2xl flex-1 flex items-center px-4 py-2.5 border border-white/5">
+                                        <span class="text-[9px] font-bold text-gray-600 mr-2 uppercase">SET ${sIdx+1}</span>
                                         <input type="number" onchange="updateKg('${k}', this.value)" value="${l.kg}" placeholder="0" class="bg-transparent w-full text-center text-sm font-bold text-cyan-400 outline-none">
                                         <span class="text-[9px] text-gray-700 ml-1">KG</span>
                                     </div>
-                                    <button onclick="markSet('${k}', ${ex.d})" class="w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${l.done ? 'bg-green-500 text-white' : 'bg-gray-700 text-gray-500'}">
+                                    <button onclick="markSet('${k}', ${ex.d})" class="w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${l.done ? 'bg-green-500 text-white shadow-lg' : 'bg-gray-700 text-gray-500'}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
                                     </button>
                                 </div>
@@ -343,28 +357,43 @@
             `).join('');
         }
 
-        function selectWorkout(id) { state.workoutId = id; document.getElementById('workout-dropdown').classList.remove('show'); renderWorkout(); save(); }
-        function toggleWorkoutDropdown() { document.getElementById('workout-dropdown').classList.toggle('show'); }
-        function markSet(k, rest) { state.logs[k] = state.logs[k] || { done: false, kg: '' }; state.logs[k].done = !state.logs[k].done; if (state.logs[k].done) startTimer(rest); renderWorkout(); save(); }
-        function updateKg(k, v) { state.logs[k] = state.logs[k] || { done: false, kg: '' }; state.logs[k].kg = v; save(); }
-        function startTimer(sec) { let left = sec; document.getElementById('timer-modal').classList.add('show'); clearInterval(timerInterval); timerInterval = setInterval(() => { left--; document.getElementById('timer-clock').textContent = `${Math.floor(left / 60)}:${(left % 60).toString().padStart(2, '0')}`; if (left <= 0) skipTimer(); }, 1000); }
+        function markSet(k, rest) {
+            if (!state.logs[k]) state.logs[k] = { done: false, kg: '' };
+            state.logs[k].done = !state.logs[k].done;
+            if (state.logs[k].done) startTimer(rest);
+            renderWorkout();
+            save();
+        }
+
+        function updateKg(k, v) {
+            if (!state.logs[k]) state.logs[k] = { done: false, kg: '' };
+            state.logs[k].kg = v;
+            save();
+        }
+
+        function startTimer(sec) {
+            let left = sec;
+            document.getElementById('timer-modal').classList.add('show');
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                left--;
+                document.getElementById('timer-clock').textContent = `${Math.floor(left / 60)}:${(left % 60).toString().padStart(2, '0')}`;
+                if (left <= 0) skipTimer();
+            }, 1000);
+        }
+
         function skipTimer() { clearInterval(timerInterval); document.getElementById('timer-modal').classList.remove('show'); }
 
         function renderDiet() {
-            document.getElementById('diet-container').innerHTML = `
-                <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 text-center shadow-lg mb-4">
-                    <h3 class="text-cyan-400 font-bold uppercase text-[10px] tracking-widest mb-4">Metas do Cutting</h3>
-                    <div class="grid grid-cols-4 gap-2">
-                        <div><p class="text-lg font-bold">${diet.kcal}</p><p class="text-[7px] text-gray-500">KCAL</p></div>
-                        <div><p class="text-lg font-bold">${diet.p}g</p><p class="text-[7px] text-gray-500">PROT</p></div>
-                        <div><p class="text-lg font-bold">${diet.c}g</p><p class="text-[7px] text-gray-500">CARB</p></div>
-                        <div><p class="text-lg font-bold">${diet.g}g</p><p class="text-[7px] text-gray-500">GORD</p></div>
+            document.getElementById('diet-container').innerHTML = diet.meals.map(m => `
+                <div class="bg-gray-800 p-4 rounded-2xl border border-white/5 shadow-lg">
+                    <div class="flex justify-between mb-2">
+                        <h4 class="font-bold text-xs text-white">${m.n} <span class="text-gray-500 text-[10px] ml-1">(${m.t})</span></h4>
+                        <span class="text-[9px] font-mono text-cyan-400 font-bold bg-cyan-400/10 px-2 py-0.5 rounded-md">${m.m}</span>
                     </div>
+                    <p class="text-xs text-gray-400 leading-relaxed">${m.i}</p>
                 </div>
-                ${diet.meals.map(m => `
-                    <div class="bg-gray-800 p-4 rounded-2xl border border-white/5"><div class="flex justify-between mb-1"><h4 class="font-bold text-xs">${m.n} <span class="text-gray-500 text-[9px]">(${m.t})</span></h4><span class="text-[9px] font-mono text-cyan-400 font-bold">${m.m}</span></div><p class="text-xs text-gray-400">${m.i}</p></div>
-                `).join('')}
-            `;
+            `).join('');
         }
 
         function renderProgress() {
@@ -387,6 +416,7 @@
         }
 
         function showFullImg(src) { document.getElementById('full-img-src').src = src; document.getElementById('full-img-modal').classList.add('show'); }
+
     </script>
 </body>
 </html>
