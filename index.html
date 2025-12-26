@@ -7,524 +7,386 @@
   <link rel="shortcut icon" href=https://i.supaimg.com/e7c4bf0e-aa4f-48ab-946d-edfa535b391a.png">
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
     <title>Plano Performance - Fábio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #111827; color: white; }
-        .bg-gray-800 { background-color: #1F2937; }
-        .bg-gray-700 { background-color: #374151; }
-        .border-gray-700 { border-color: #374151; }
-        .text-cyan-400 { color: #22D3EE; }
-        .bg-cyan-500 { background-color: #06B6D4; }
-        .bg-cyan-600 { background-color: #0891B2; }
-        .bg-green-500 { background-color: #10B981; }
-        .bg-green-900\/50 { background-color: rgba(6, 78, 59, 0.5); }
-        .dropdown-content { display: none; }
-        .dropdown-content.show { display: block; }
-        input[type="number"] { -moz-appearance: textfield; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .chart-container { position: relative; height: 300px; width: 100%; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
+        .bg-gray-800 { background-color: #1e293b; }
+        .text-cyan-400 { color: #22d3ee; }
+        .hidden { display: none !important; }
         .modal { display: none; }
         .modal.show { display: flex; }
-        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        .dropdown-content { display: none; }
+        .dropdown-content.show { display: block; }
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .active-tab { background-color: #0891b2 !important; color: white !important; }
+        .day-btn.active { background-color: #0891b2 !important; border-color: #22d3ee !important; color: white !important; }
     </style>
 </head>
-<body class="p-4">
-    <div class="max-w-2xl mx-auto">
+<body class="p-4 pb-24">
+
+    <div class="max-w-xl mx-auto">
         <!-- Cabeçalho -->
         <header class="text-center mb-6">
-            <div class="flex items-center justify-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m6 2 4 4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/><path d="M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0"/></svg>
-                <h1 class="text-3xl font-bold uppercase tracking-tighter">Plano Performance</h1>
+            <div class="flex items-center justify-center gap-2 mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-cyan-400"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m6 2 4 4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/><path d="M12 12m-3 0a3 3 0 1 1 6 0 3 3 0 1 1-6 0"/></svg>
+                <h1 class="text-xl font-bold uppercase tracking-tight">Plano Performance</h1>
             </div>
-            <h2 class="text-xl font-semibold text-cyan-400 mt-1">para Fábio</h2>
-            <p id="daily-quote" class="text-gray-400 italic mt-3 text-sm">"Onde não há esforço, não há progresso."</p>
+            <h2 class="text-lg font-semibold text-white">Fábio</h2>
+            <p id="motivational-quote" class="text-gray-400 italic text-xs mt-3 px-4 leading-relaxed"></p>
         </header>
 
-        <!-- Progresso Total -->
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6 shadow-lg">
-            <h3 class="text-sm font-bold text-cyan-400 mb-2 uppercase">Ciclo Upper-Mass Avançado</h3>
-            <div class="flex justify-between items-center mb-1">
-                <span id="completed-workouts-text" class="text-xs font-mono">0/54 treinos</span>
-                <span id="total-progress-percent" class="text-xs font-bold">0%</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-3 mb-3">
-                <div id="total-progress-bar" class="bg-cyan-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
-            </div>
-            <div class="grid grid-cols-2 text-[10px] text-gray-400 uppercase tracking-widest">
-                <div class="flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-400"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                    <span>Início: 29/12/2025</span>
+        <!-- Ciclo de Datas -->
+        <div class="bg-gray-800 p-4 rounded-2xl border border-white/5 mb-6 shadow-xl">
+            <div class="flex justify-between items-center text-center">
+                <div>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Início</p>
+                    <p class="text-sm font-bold text-white">29/12/2025</p>
                 </div>
-                <div class="flex items-center gap-1 justify-end">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-400"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
-                    <span>Fim: 01/03/2026</span>
+                <div class="h-6 w-px bg-gray-700"></div>
+                <div>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Fim do Ciclo</p>
+                    <p class="text-sm font-bold text-cyan-400">01/03/2026</p>
                 </div>
             </div>
         </div>
 
-        <!-- Menu -->
-        <div class="flex bg-gray-800 rounded-lg p-1 mb-6 shadow-inner">
-            <button data-view="treino" class="view-tab w-1/3 py-2 rounded-md text-sm font-bold transition-all bg-cyan-600">TREINO</button>
-            <button data-view="dieta" class="view-tab w-1/3 py-2 rounded-md text-sm font-bold transition-all bg-transparent">DIETA</button>
-            <button data-view="progresso" class="view-tab w-1/3 py-2 rounded-md text-sm font-bold transition-all bg-transparent">PROGRESSO</button>
-        </div>
+        <!-- Navegação Principal -->
+        <nav class="flex bg-gray-800 rounded-2xl p-1 mb-6 border border-white/5 shadow-inner">
+            <button onclick="switchTab('treino')" id="tab-btn-treino" class="nav-btn flex-1 py-3 rounded-xl text-xs font-bold transition-all active-tab">TREINO</button>
+            <button onclick="switchTab('dieta')" id="tab-btn-dieta" class="nav-btn flex-1 py-3 rounded-xl text-xs font-bold transition-all text-gray-400">DIETA</button>
+            <button onclick="switchTab('progresso')" id="tab-btn-progresso" class="nav-btn flex-1 py-3 rounded-xl text-xs font-bold transition-all text-gray-400">PROGRESSO</button>
+        </nav>
 
-        <!-- Views -->
-        <div id="view-content">
-            <!-- Treino -->
-            <div id="treino-view" class="view active-view">
-                <div class="mb-4 relative">
-                    <button id="workout-select-button" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-left flex justify-between items-center hover:bg-gray-700 transition">
-                        <span id="selected-workout-text" class="font-bold text-sm">Carregando...</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+        <main>
+            <!-- View: Treino -->
+            <div id="view-treino" class="view-content">
+                <div class="relative mb-4">
+                    <button onclick="toggleWorkoutDropdown()" class="w-full bg-gray-800 border border-white/5 rounded-2xl px-5 py-4 text-left flex justify-between items-center shadow-lg">
+                        <span id="display-workout-name" class="font-bold text-sm text-cyan-400">A: Peito & Deltoide</span>
+                        <svg id="dropdown-icon" class="transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                     </button>
-                    <div id="workout-dropdown" class="dropdown-content absolute top-full left-0 right-0 bg-gray-800 border border-gray-700 mt-1 rounded-lg z-20 shadow-2xl max-h-80 overflow-y-auto"></div>
-                </div>
-                
-                <div id="weekly-calendar" class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6 overflow-hidden">
-                    <div class="grid grid-cols-6 gap-1" id="calendar-days"></div>
+                    <div id="workout-dropdown" class="dropdown-content absolute top-full left-0 right-0 bg-gray-800 border border-white/10 mt-2 rounded-2xl z-50 shadow-2xl overflow-hidden"></div>
                 </div>
 
-                <div id="warmup-section" class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6"></div>
-                <div id="workout-day-content"></div>
+                <div class="bg-gray-800 p-4 rounded-2xl border border-white/5 mb-6">
+                    <div class="grid grid-cols-6 gap-2" id="day-selector"></div>
+                </div>
+
+                <div id="exercise-list" class="space-y-4"></div>
             </div>
 
-            <!-- Dieta -->
-            <div id="dieta-view" class="view hidden"></div>
+            <!-- View: Dieta -->
+            <div id="view-dieta" class="view-content hidden">
+                <div id="diet-container" class="space-y-4"></div>
+            </div>
 
-            <!-- Progresso -->
-            <div id="progresso-view" class="view hidden"></div>
-        </div>
+            <!-- View: Progresso -->
+            <div id="view-progresso" class="view-content hidden">
+                <!-- Informações do Usuário -->
+                <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg mb-6">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/5">
+                         <div class="flex flex-col">
+                            <span class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Idade</span>
+                            <span class="text-sm font-bold">35 Anos</span>
+                        </div>
+                        <div class="flex flex-col text-right">
+                            <span class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Altura</span>
+                            <span class="text-sm font-bold">1.70m</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center">
+                            <p class="text-[9px] text-gray-500 uppercase mb-1">Peso Atual</p>
+                            <p id="current-weight-card" class="text-xl font-bold">--</p>
+                        </div>
+                        <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center">
+                            <p class="text-[9px] text-gray-500 uppercase mb-1">Gordura Atual</p>
+                            <p id="current-fat-card" class="text-xl font-bold text-cyan-400">--</p>
+                        </div>
+                    </div>
 
-        <!-- Timer Modal -->
-        <div id="timer-modal" class="modal fixed inset-0 bg-black/90 items-center justify-center z-50">
-            <div class="bg-gray-800 rounded-3xl p-8 text-center flex flex-col items-center border border-cyan-500/30 shadow-[0_0_50px_rgba(6,182,212,0.2)]">
-                <div class="animate-pulse mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-400"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5 text-center">
+                            <p class="text-[8px] text-gray-500 uppercase">Músculo</p>
+                            <p class="text-xs font-bold">38.9kg</p>
+                        </div>
+                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5 text-center">
+                            <p class="text-[8px] text-gray-500 uppercase">Visceral</p>
+                            <p class="text-xs font-bold">9</p>
+                        </div>
+                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5 text-center">
+                            <p class="text-[8px] text-gray-500 uppercase">Basal</p>
+                            <p class="text-xs font-bold">1700<span class="text-[8px]">kcal</span></p>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold uppercase tracking-widest text-gray-400">Descanso</h3>
-                <p id="timer-time" class="text-8xl font-mono font-bold text-white my-6">0:00</p>
-                <button id="timer-stop-button" class="bg-red-500/20 hover:bg-red-500 text-red-500 hover:text-white border border-red-500 font-bold py-3 px-10 rounded-full transition-all">Pular</button>
+
+                <!-- Novo Registro (Corrigido para não vazar da tela) -->
+                <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg mb-6">
+                    <h3 class="text-xs font-bold text-gray-400 mb-4 uppercase text-center tracking-widest">Novo Registro</h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-3">
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-[9px] text-gray-500 uppercase font-bold mb-1 ml-1">Peso (kg)</label>
+                                <input id="input-weight" type="number" step="0.1" placeholder="00.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-white outline-none focus:border-cyan-400">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-[9px] text-gray-500 uppercase font-bold mb-1 ml-1">BF (%)</label>
+                                <input id="input-fat" type="number" step="0.1" placeholder="00.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-cyan-400 outline-none focus:border-cyan-400">
+                            </div>
+                        </div>
+                        <button onclick="addProgressEntry()" class="w-full bg-cyan-600 py-3.5 rounded-xl font-bold text-sm hover:bg-cyan-500 active:scale-95 transition-all shadow-lg">ADICIONAR AO HISTÓRICO</button>
+                    </div>
+                </div>
+
+                <!-- Perímetros -->
+                <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg">
+                    <h3 class="text-xs font-bold text-cyan-400 mb-4 uppercase tracking-widest text-center">Perímetros de Referência (cm)</h3>
+                    <div id="perimeters-list" class="grid grid-cols-2 gap-x-4 gap-y-2"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modais -->
+        <div id="timer-modal" class="modal fixed inset-0 bg-black/90 items-center justify-center z-[100]">
+            <div class="bg-gray-800 rounded-[40px] p-10 text-center border border-cyan-500/20">
+                <h3 class="text-cyan-400 uppercase text-xs tracking-[0.3em] mb-4 font-bold">Descanso</h3>
+                <p id="timer-clock" class="text-7xl font-mono font-bold text-white mb-8">0:00</p>
+                <button onclick="skipTimer()" class="bg-white/5 text-white border border-white/10 px-12 py-2 rounded-full font-bold text-xs uppercase tracking-widest">Pular</button>
             </div>
         </div>
 
-        <!-- Image Modal -->
-        <div id="image-modal" class="modal fixed inset-0 bg-black/95 items-center justify-center z-50">
-             <div class="relative p-2 w-full max-w-lg">
-                 <button id="image-modal-close" class="absolute -top-10 right-0 text-white hover:text-cyan-400"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
-                 <img id="modal-image-element" src="" alt="Dica" class="w-full rounded-2xl shadow-2xl border border-gray-700" />
-             </div>
+        <div id="img-modal" class="modal fixed inset-0 bg-black items-center justify-center z-[110] p-4" onclick="this.classList.remove('show')">
+            <img id="img-modal-src" src="" class="max-w-full max-h-[80vh] rounded-2xl shadow-2xl border border-white/5">
         </div>
 
-        <footer class="text-center mt-12 mb-6">
-            <p class="text-gray-600 text-[10px] uppercase tracking-[0.3em]">Built for performance. Version 7.0</p>
+        <footer class="text-center mt-12 text-gray-600">
+            <p class="text-[9px] uppercase tracking-[0.4em]">Fábio Performance App • v7.7</p>
         </footer>
     </div>
 
     <script>
-        // --- CONFIGURAÇÃO DO NOVO TREINO ABCDEF ---
-        const initialWorkouts = [
-            { id: 'a', day: 'Segunda', name: 'A: Peito & Deltoide Frontal (Força)', exercises: [
-                { name: 'Supino Reto Barra', sets: 5, reps: '5', rest: 150, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif', technique: 'Foco total em carga - Explosão' },
-                { name: 'Supino Inclinado Halteres', sets: 4, reps: '8-10', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Bench-Press.gif', technique: 'Controlar descida 3s' },
-                { name: 'Desenvolvimento Militar Barra', sets: 4, reps: '6-8', rest: 120, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Overhead-Press.gif', technique: 'Tronco firme, sem impulso' },
-                { name: 'Crucifixo Máquina / Polia', sets: 3, reps: '12-15', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pec-Deck-Fly.gif', technique: 'Pico de contração 2s' },
-                { name: 'Elevação Frontal Polia', sets: 3, reps: '12', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Front-Raise.gif' }
-            ]},
-            { id: 'b', day: 'Terça', name: 'B: Costas & Deltoide Posterior (Força)', exercises: [
-                { name: 'Levantamento Terra (Sumô ou Tradicional)', sets: 5, reps: '5', rest: 180, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Deadlift.gif', technique: 'Base da força - Escápulas travadas' },
-                { name: 'Remada Curvada Barra', sets: 4, reps: '8', rest: 120, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bent-Over-Row.gif', technique: 'Tronco paralelo ao chão' },
-                { name: 'Barra Fixa (com peso extra)', sets: 4, reps: 'Falha', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pull-up.gif', technique: 'Amplitude máxima' },
-                { name: 'Crucifixo Invertido Halteres', sets: 4, reps: '15', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Rear-Lateral-Raise.gif' },
-                { name: 'Encolhimento Barra (pela frente)', sets: 4, reps: '12', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Shrug.gif', technique: 'Segurar 2s no topo' }
-            ]},
-            { id: 'c', day: 'Quarta', name: 'C: Inferiores (Quadríceps Focus)', exercises: [
-                { name: 'Agachamento Livre', sets: 4, reps: '8', rest: 150, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Squat.gif', technique: 'Descer abaixo de 90 graus' },
-                { name: 'Leg Press 45 (Pés baixos)', sets: 4, reps: '12', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/03/Leg-Press.gif', technique: 'Sem estender totalmente joelhos' },
-                { name: 'Cadeira Extensora', sets: 4, reps: '15 + DropSet', rest: 60, image: 'https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/cadeira-extensora.gif' },
-                { name: 'Passada / Avanço Halteres', sets: 3, reps: '20 passos', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lunge.gif' },
-                { name: 'Panturrilha em Pé', sets: 5, reps: '15-20', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Standing-Calf-Raise.gif' }
-            ]},
-            { id: 'd', day: 'Quinta', name: 'D: Braços (Tríceps & Bíceps)', exercises: [
-                { name: 'Supino Fechado (Tríceps)', sets: 4, reps: '8', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Close-Grip-Bench-Press.gif', technique: 'Cotovelos raspando nas costelas' },
-                { name: 'Rosca Direta Barra W', sets: 4, reps: '8-10', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Curl.gif', technique: 'Sem balançar o tronco' },
-                { name: 'Tríceps Testa + Supino Francês', sets: 3, reps: '10+10', rest: 75, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Skullcrusher.gif', technique: 'Combo para destruir o tríceps' },
-                { name: 'Rosca Martelo Halteres', sets: 3, reps: '12', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/Hammer-Curl.gif' },
-                { name: 'Tríceps Corda Polia', sets: 3, reps: '15 + DropSet', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Triceps-Pushdown.gif' },
-                { name: 'Rosca Inversa Barra', sets: 3, reps: '15', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Reverse-Curl.gif', technique: 'Foco antebraço' }
-            ]},
-            { id: 'e', day: 'Sexta', name: 'E: Peito & Costas (Volume/Supersets)', exercises: [
-                { name: 'Supino Inclinado Barra', sets: 4, reps: '12', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Barbell-Bench-Press.gif' },
-                { name: 'Puxada Frente Aberta', sets: 4, reps: '12', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif' },
-                { name: 'Dips (Paralelas)', sets: 3, reps: 'Falha', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dip.gif' },
-                { name: 'Remada Sentada Neutra', sets: 3, reps: '15', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Cable-Row.gif' },
-                { name: 'Pullover Halter', sets: 3, reps: '15', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Pullover.gif' }
-            ]},
-            { id: 'f', day: 'Sábado', name: 'F: Ombros, Core & Braços (Pump)', exercises: [
-                { name: 'Desenvolvimento Arnold', sets: 4, reps: '10-12', rest: 90, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Arnold-Press.gif' },
-                { name: 'Elevação Lateral Halteres', sets: 5, reps: '15-20', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif', technique: 'Rest-Pause na última' },
-                { name: 'Face Pull', sets: 4, reps: '20', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Face-Pull.gif' },
-                { name: 'Rosca Concentrada', sets: 3, reps: '12', rest: 45, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Concentration-Curl.gif' },
-                { name: 'Abdominal Roda', sets: 4, reps: 'Falha', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Ab-Roller.gif' },
-                { name: 'Prancha Isométrica', sets: 3, reps: '1 min', rest: 60, image: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Plank.gif' }
-            ]},
+        // --- DATA ---
+        const quotes = [
+            "A dor é temporária, a glória é eterna.",
+            "Visualiza os 10% de BF e não para até chegar lá.",
+            "Não pare quando estiver cansado, pare quando terminar.",
+            "Disciplina é o que te leva onde o talento não alcança.",
+            "Sua única competição é quem você era ontem.",
+            "Fábio, cada repetição é um degrau rumo ao topo.",
+            "Cumpra o plano. Os resultados virão."
         ];
 
-        const mealPlanData = {
-            totalCalories: 2050,
-            macros: { protein: 165, carbs: 190, fats: 65 },
+        const workoutData = [
+            { id: 'a', day: 'Seg', name: 'A: Peito & Deltoide Frontal', exercises: [
+                { n: 'Supino Reto Barra', s: 5, r: '5', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif' },
+                { n: 'Supino Inclinado Halteres', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Bench-Press.gif' },
+                { n: 'Crucifixo Inclinado', s: 3, r: '12-15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Fly.gif' },
+                { n: 'Desenvolvimento Militar Barra', s: 4, r: '6-8', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Overhead-Press.gif' },
+                { n: 'Elevação Frontal Polia', s: 3, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Front-Raise.gif' }
+            ]},
+            { id: 'b', day: 'Ter', name: 'B: Costas & Posterior Ombro', exercises: [
+                { n: 'Levantamento Terra', s: 5, r: '5', d: 150, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Deadlift.gif' },
+                { n: 'Remada Curvada Barra', s: 4, r: '8', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bent-Over-Row.gif' },
+                { n: 'Puxada Frente Aberta', s: 4, r: '10-12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif' },
+                { n: 'Remada Unilateral Halter', s: 3, r: '10-12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Row.gif' },
+                { n: 'Crucifixo Invertido', s: 4, r: '15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Rear-Lateral-Raise.gif' }
+            ]},
+            { id: 'c', day: 'Qua', name: 'C: Inferiores (Quads Focus)', exercises: [
+                { n: 'Agachamento Livre', s: 4, r: '8', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Squat.gif' },
+                { n: 'Leg Press 45', s: 4, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/03/Leg-Press.gif' },
+                { n: 'Avanço Halteres', s: 3, r: '10-12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lunge.gif' },
+                { n: 'Cadeira Extensora', s: 4, r: '15', d: 60, g: 'https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/cadeira-extensora.gif' },
+                { n: 'Panturrilha em Pé', s: 5, r: '20', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Standing-Calf-Raise.gif' }
+            ]},
+            { id: 'd', day: 'Qui', name: 'D: Braços Completo', exercises: [
+                { n: 'Supino Fechado', s: 4, r: '8', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Close-Grip-Bench-Press.gif' },
+                { n: 'Rosca Direta Barra W', s: 4, r: '10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Curl.gif' },
+                { n: 'Tríceps Testa Polia', s: 3, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Triceps-Extension.gif' },
+                { n: 'Rosca Martelo', s: 3, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/Hammer-Curl.gif' },
+                { n: 'Tríceps Corda', s: 3, r: '15', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Triceps-Pushdown.gif' },
+                { n: 'Rosca Inversa Barra', s: 3, r: '15', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Reverse-Curl.gif' }
+            ]},
+            { id: 'e', day: 'Sex', name: 'E: Peito & Costas (Power)', exercises: [
+                { n: 'Supino Reto Halteres', s: 4, r: '10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Bench-Press.gif' },
+                { n: 'Remada Barra T', s: 4, r: '10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/T-bar-Row.gif' },
+                { n: 'Supino Inclinado Barra', s: 3, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Barbell-Bench-Press.gif' },
+                { n: 'Puxada Triângulo', s: 3, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/puxada-frente-fechada-pulley-triangulo.gif' },
+                { n: 'Dips (Paralelas)', s: 3, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dip.gif' }
+            ]},
+            { id: 'f', day: 'Sáb', name: 'F: Ombros, Core & Pump', exercises: [
+                { n: 'Desenvolvimento Arnold', s: 4, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Arnold-Press.gif' },
+                { n: 'Elevação Lateral Halteres', s: 5, r: '15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif' },
+                { n: 'Face Pull', s: 4, r: '20', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Face-Pull.gif' },
+                { n: 'Abdominal Roda', s: 4, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Ab-Roller.gif' },
+                { n: 'Prancha Isométrica', s: 3, r: '1 min', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Plank.gif' }
+            ]}
+        ];
+
+        const diet = {
+            kcal: 2050, p: 165, c: 190, g: 65,
             meals: [
-                { name: "07:00 - Café da manhã", macros: "30g P | 40g C | 12g G", options: [{ id: 1, items: [{ food: "4 claras + 2 ovos inteiros", qty: "mexidos" }, { food: "Aveia", qty: "40g" }, { food: "Banana", qty: "1 un" }] }] },
-                { name: "10:00 - Lanche manhã", macros: "35g P | 30g C | 9g G", options: [{ id: 1, items: [{ food: "Frango desfiado", qty: "150g" }, { food: "Pão integral", qty: "2 fatias" }, { food: "Pasta amendoim", qty: "10g" }] }] },
-                { name: "13:00 - Almoço", macros: "40g P | 30g C | 12g G", options: [{ id: 1, items: [{ food: "Peito de frango / Patinho", qty: "150g" }, { food: "Arroz integral", qty: "100g" }, { food: "Salada verde + Azeite", qty: "10g" }] }] },
-                { name: "16:30 - Pré-treino", macros: "35g P | 35g C | 5g G", options: [{ id: 1, items: [{ food: "Batata-doce / Mandioca", qty: "150g" }, { food: "Peito de frango / Peixe", qty: "150g" }] }] },
-                { name: "19:00 - Pós-treino", macros: "25g P | 25g C | 1g G", options: [{ id: 1, items: [{ food: "Whey Protein", qty: "1 scoop" }, { food: "Banana", qty: "1 un" }] }] },
-                { name: "22:00 - Jantar / Ceia", macros: "30g P | 10g C | 15g G", options: [{ id: 1, items: [{ food: "Peixe (Tilápia/Salmão)", qty: "200g" }, { food: "Brócolis / Abobrinha", qty: "Livre" }, { food: "Castanhas", qty: "10g" }] }] }
-            ],
-            rules: [
-                { icon: 'dumbbell', text: "Membros Superiores: Prioridade total no volume de treino." },
-                { icon: 'droplet', text: "Água: 2,6 litros por dia no mínimo." },
-                { icon: 'zap', text: "HIIT: 3x na semana (15 min) para auxiliar na definição (10% BF)." },
-                { icon: 'pizza', text: "Uma refeição livre semanal controlada." }
+                { t: "07:00", n: "Café da Manhã", m: "30P|40C|12G", i: "4 claras + 2 ovos inteiros, 40g aveia, 1 banana" },
+                { t: "10:00", n: "Lanche", m: "35P|30C|9G", i: "150g frango, 2 fatias pão integral, 10g pasta amendoim" },
+                { t: "13:00", n: "Almoço", m: "40P|30C|12G", i: "150g frango/patinho, 100g arroz integral, salada + azeite" },
+                { t: "16:30", n: "Pré-treino", m: "35P|35C|5G", i: "150g batata-doce, 150g frango/peixe" },
+                { t: "19:00", n: "Pós-treino", m: "25P|25C|1G", i: "1 scoop whey, 1 banana" },
+                { t: "22:00", n: "Ceia", m: "30P|10C|15G", i: "200g peixe, brócolis, 10g castanhas" }
             ]
         };
 
-        // --- ESTADO & LÓGICA ---
-        const COOKIE_NAME = 'workoutAppState_v7.0';
-        const PLAN_ID = 'v7.0_291225';
-        const TOTAL_WORKOUTS = 54;
+        const initialMeasures = { "Braço E": 35, "Braço D": 37, "Tórax": 93, "Abdome": 82, "Cintura": 84, "Coxa E": 59, "Coxa D": 60, "Pant. E": 38, "Pant. D": 38, "Ombro": 121 };
 
+        // --- ESTADO ---
+        const COOKIE_KEY = 'fabio_v7_7_final';
         let state = {
-            view: 'treino',
-            workoutsData: [],
-            selectedWorkoutId: 'a',
-            completedWorkoutsCount: 0,
-            warmupState: { cardio: false, mobility: false },
-            cardioState: { h1: false, h2: false, h3: false },
-            measurementHistory: [{ date: 'Início', peso: 74.7, gordura: 21.1 }],
-            bodyMeasurements: {},
-            goals: { weight: 70, bodyFat: 10 },
-            timer: { active: false, timeLeft: 0, interval: null }
+            tab: 'treino',
+            workoutId: 'a',
+            history: [{ d: '29/12', w: 74.7, f: 21.1 }],
+            logs: {},
+            measures: { ...initialMeasures }
         };
 
-        // Funções de Cookie
-        function setCookie(value) {
+        let timerInterval = null;
+
+        // --- MOTOR ---
+        window.onload = function() {
+            load();
+            initUI();
+            switchTab(state.tab);
+        };
+
+        function save() {
             const date = new Date();
             date.setFullYear(date.getFullYear() + 1);
-            document.cookie = `${COOKIE_NAME}=${encodeURIComponent(JSON.stringify(value))}; expires=${date.toUTCString()}; path=/; SameSite=Lax`;
+            document.cookie = `${COOKIE_KEY}=${encodeURIComponent(JSON.stringify(state))}; expires=${date.toUTCString()}; path=/; SameSite=Lax`;
         }
 
-        function getCookie() {
-            const match = document.cookie.match(new RegExp('(^| )' + COOKIE_NAME + '=([^;]+)'));
-            return match ? JSON.parse(decodeURIComponent(match[2])) : null;
+        function load() {
+            const match = document.cookie.match(new RegExp('(^| )' + COOKIE_KEY + '=([^;]+)'));
+            if (match) { try { state = { ...state, ...JSON.parse(decodeURIComponent(match[2])) }; } catch(e) {} }
         }
 
-        // Inicialização
-        function init() {
-            const saved = getCookie();
-            if (saved) {
-                state = { ...state, ...saved };
-                // Se o treino salvo for de outra versão, reinicializamos os dados de exercício mas mantemos o progresso
-                state.workoutsData = initializeSetDetails(state.workoutsData.length === initialWorkouts.length ? state.workoutsData : initialWorkouts);
-            } else {
-                state.workoutsData = initializeSetDetails(initialWorkouts);
-            }
-
-            setupTabs();
-            render();
+        function initUI() {
+            const today = new Date().getDate();
+            document.getElementById('motivational-quote').textContent = `"${quotes[today % quotes.length]}"`;
             
-            const today = new Date().getDay(); // 0 Dom, 1 Seg...
-            const mapDay = ['a', 'a', 'b', 'c', 'd', 'e', 'f'];
-            state.selectedWorkoutId = mapDay[today] || 'a';
-            renderWorkout();
+            document.getElementById('workout-dropdown').innerHTML = workoutData.map(w => `
+                <div onclick="selectWorkout('${w.id}')" class="p-4 border-b border-white/5 text-sm hover:bg-white/5 cursor-pointer">${w.name}</div>
+            `).join('');
+
+            document.getElementById('day-selector').innerHTML = workoutData.map(w => `
+                <div onclick="selectWorkout('${w.id}')" id="day-${w.id}" class="day-btn p-3 rounded-xl text-center cursor-pointer transition-all bg-gray-900 text-gray-500">
+                    <p class="text-[10px] font-bold uppercase">${w.day}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('perimeters-list').innerHTML = Object.entries(state.measures).map(([k, v]) => `
+                <div class="flex justify-between items-center py-2 border-b border-white/5">
+                    <span class="text-[9px] text-gray-500 uppercase">${k}</span>
+                    <span class="text-xs font-bold text-white">${v}cm</span>
+                </div>
+            `).join('');
         }
 
-        function initializeSetDetails(workouts) {
-            return workouts.map(w => ({
-                ...w,
-                exercises: w.exercises.map(ex => ({
-                    ...ex,
-                    setDetails: ex.setDetails || Array.from({ length: ex.sets }, () => ({ completed: false, weight: '' }))
-                }))
-            }));
+        function switchTab(t) {
+            state.tab = t;
+            document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab', 'text-white'));
+            
+            document.getElementById(`view-${t}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${t}`).classList.add('active-tab', 'text-white');
+
+            if (t === 'treino') renderWorkout();
+            if (t === 'dieta') renderDiet();
+            if (t === 'progresso') renderProgress();
+            save();
         }
 
-        // Renderização Geral
-        function render() {
-            updateProgressHeader();
-            if (state.view === 'treino') renderWorkout();
-            if (state.view === 'dieta') renderDiet();
-            if (state.view === 'progresso') renderProgress();
-        }
-
-        function updateProgressHeader() {
-            const progress = (state.completedWorkoutsCount / TOTAL_WORKOUTS) * 100;
-            document.getElementById('completed-workouts-text').textContent = `${state.completedWorkoutsCount}/${TOTAL_WORKOUTS} treinos`;
-            document.getElementById('total-progress-percent').textContent = `${Math.round(progress)}%`;
-            document.getElementById('total-progress-bar').style.width = `${progress}%`;
-        }
-
-        function setupTabs() {
-            document.querySelectorAll('.view-tab').forEach(btn => {
-                btn.onclick = () => {
-                    state.view = btn.dataset.view;
-                    document.querySelectorAll('.view-tab').forEach(b => b.classList.remove('bg-cyan-600'));
-                    btn.classList.add('bg-cyan-600');
-                    render();
-                };
-            });
-        }
-
-        // --- ABA TREINO ---
         function renderWorkout() {
-            const view = document.getElementById('treino-view');
-            const dropdown = document.getElementById('workout-dropdown');
-            const btnText = document.getElementById('selected-workout-text');
-            const workout = state.workoutsData.find(w => w.id === state.selectedWorkoutId);
+            const current = workoutData.find(w => w.id === state.workoutId);
+            document.getElementById('display-workout-name').textContent = current.name;
+            document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`day-${state.workoutId}`).classList.add('active');
 
-            btnText.textContent = workout.name;
-            dropdown.innerHTML = state.workoutsData.map(w => `
-                <div onclick="selectWorkout('${w.id}')" class="p-4 hover:bg-gray-700 cursor-pointer border-b border-gray-700 text-sm ${w.id === state.selectedWorkoutId ? 'text-cyan-400 font-bold' : ''}">
-                    ${w.name}
-                </div>
-            `).join('');
-
-            document.getElementById('workout-select-button').onclick = () => dropdown.classList.toggle('show');
-
-            // Calendário
-            const weekDays = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
-            document.getElementById('calendar-days').innerHTML = weekDays.map((d, i) => `
-                <div class="p-2 rounded-lg text-center ${workout.id === state.workoutsData[i].id ? 'bg-cyan-600' : 'bg-gray-700'}">
-                    <p class="text-[10px] font-bold">${d}</p>
-                </div>
-            `).join('');
-
-            // Aquecimento
-            document.getElementById('warmup-section').innerHTML = `
-                <h4 class="text-xs font-bold text-cyan-400 mb-3 uppercase tracking-tighter">Aquecimento Pré-Treino</h4>
-                <div class="space-y-2">
-                    <div onclick="toggleWarmup('cardio')" class="flex items-center justify-between p-3 rounded-xl border border-gray-700 cursor-pointer ${state.warmupState.cardio ? 'bg-green-900/30 border-green-500' : 'bg-gray-900'}">
-                        <div class="flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-400"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg><span class="text-sm">Cardio Leve (5 min)</span></div>
-                        ${state.warmupState.cardio ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-green-500"><path d="M20 6 9 17l-5-5"/></svg>' : ''}
-                    </div>
-                    <div onclick="toggleWarmup('mobility')" class="flex items-center justify-between p-3 rounded-xl border border-gray-700 cursor-pointer ${state.warmupState.mobility ? 'bg-green-900/30 border-green-500' : 'bg-gray-900'}">
-                        <div class="flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan-400"><path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 0 1 4-4h12"/><path d="M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 0 1-4 4H5"/></svg><span class="text-sm">Mobilidade Articular</span></div>
-                        ${state.warmupState.mobility ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-green-500"><path d="M20 6 9 17l-5-5"/></svg>' : ''}
-                    </div>
-                </div>
-            `;
-
-            // Exercícios
-            const content = document.getElementById('workout-day-content');
-            content.innerHTML = workout.exercises.map((ex, exIdx) => `
-                <div class="bg-gray-800 rounded-2xl p-5 mb-4 border border-gray-700 shadow-xl">
+            const list = document.getElementById('exercise-list');
+            list.innerHTML = current.exercises.map((ex, exIdx) => `
+                <div class="bg-gray-800 rounded-3xl p-5 border border-white/5 shadow-lg">
                     <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h4 class="font-bold text-lg leading-tight">${ex.name}</h4>
-                            <p class="text-xs text-gray-400 mt-1">${ex.sets} séries • ${ex.reps} reps • ${ex.rest}s descanso</p>
-                            ${ex.technique ? `<p class="text-[10px] text-amber-400 font-semibold mt-1 uppercase italic">${ex.technique}</p>` : ''}
-                        </div>
-                        <img onclick="openImg('${ex.image}')" src="${ex.image}" class="w-16 h-16 rounded-lg object-cover border border-gray-600 shadow-md cursor-pointer">
+                        <div class="flex-1 pr-2"><h4 class="font-bold text-white text-base leading-tight">${ex.n}</h4><p class="text-[10px] text-gray-500 uppercase mt-1">${ex.s}x${ex.r} • ${ex.d}s</p></div>
+                        <img onclick="showFullImg('${ex.g}')" src="${ex.g}" class="w-14 h-14 rounded-xl object-cover bg-black/20" onerror="this.src='https://placehold.co/100?text=GIF'">
                     </div>
                     <div class="space-y-2">
-                        ${ex.setDetails.map((s, sIdx) => `
-                            <div class="flex items-center gap-2">
-                                <div class="bg-gray-900 rounded-lg flex-1 flex items-center px-3 py-2 border border-gray-700">
-                                    <span class="text-[10px] font-bold text-gray-500 w-8">#${sIdx + 1}</span>
-                                    <input type="number" onchange="updateWeight('${workout.id}', ${exIdx}, ${sIdx}, this.value)" value="${s.weight}" placeholder="KG" class="bg-transparent w-full text-center text-sm font-bold focus:outline-none text-cyan-400">
+                        ${Array.from({length: ex.s}).map((_, sIdx) => {
+                            const k = `${state.workoutId}_${exIdx}_${sIdx}`;
+                            const l = state.logs[k] || { done: false, kg: '' };
+                            return `
+                                <div class="flex items-center gap-2">
+                                    <div class="bg-gray-900 rounded-2xl flex-1 flex items-center px-4 py-2 border border-white/5">
+                                        <span class="text-[9px] font-bold text-gray-600 mr-2">S${sIdx+1}</span>
+                                        <input type="number" onchange="updateKg('${k}', this.value)" value="${l.kg}" placeholder="0" class="bg-transparent w-full text-center text-sm font-bold text-cyan-400 outline-none">
+                                        <span class="text-[9px] text-gray-700 ml-1">KG</span>
+                                    </div>
+                                    <button onclick="markSet('${k}', ${ex.d})" class="w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${l.done ? 'bg-green-500 text-white' : 'bg-gray-700 text-gray-500'}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
+                                    </button>
                                 </div>
-                                <button onclick="toggleSet('${workout.id}', ${exIdx}, ${sIdx}, ${ex.rest})" class="w-10 h-10 rounded-lg flex items-center justify-center transition-all ${s.completed ? 'bg-green-500 text-white' : 'bg-gray-700 text-gray-500'}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
-                                </button>
-                            </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </div>
                 </div>
-            `).join('') + `
-                <button onclick="finishWorkout()" class="w-full bg-cyan-600 hover:bg-cyan-500 py-4 rounded-2xl font-bold uppercase tracking-widest transition shadow-lg mt-4">Finalizar Treino</button>
-            `;
+            `).join('');
         }
 
-        function selectWorkout(id) {
-            state.selectedWorkoutId = id;
-            document.getElementById('workout-dropdown').classList.remove('show');
-            renderWorkout();
-            setCookie(state);
-        }
+        function selectWorkout(id) { state.workoutId = id; document.getElementById('workout-dropdown').classList.remove('show'); renderWorkout(); save(); }
+        function toggleWorkoutDropdown() { document.getElementById('workout-dropdown').classList.toggle('show'); }
+        function markSet(k, rest) { state.logs[k] = state.logs[k] || { done: false, kg: '' }; state.logs[k].done = !state.logs[k].done; if (state.logs[k].done) startTimer(rest); renderWorkout(); save(); }
+        function updateKg(k, v) { state.logs[k] = state.logs[k] || { done: false, kg: '' }; state.logs[k].kg = v; save(); }
+        function startTimer(sec) { let left = sec; document.getElementById('timer-modal').classList.add('show'); clearInterval(timerInterval); timerInterval = setInterval(() => { left--; document.getElementById('timer-clock').textContent = `${Math.floor(left / 60)}:${(left % 60).toString().padStart(2, '0')}`; if (left <= 0) skipTimer(); }, 1000); }
+        function skipTimer() { clearInterval(timerInterval); document.getElementById('timer-modal').classList.remove('show'); }
 
-        function toggleWarmup(key) {
-            state.warmupState[key] = !state.warmupState[key];
-            renderWorkout();
-            setCookie(state);
-        }
-
-        function toggleSet(wId, exIdx, sIdx, rest) {
-            const w = state.workoutsData.find(item => item.id === wId);
-            const set = w.exercises[exIdx].setDetails[sIdx];
-            set.completed = !set.completed;
-            if (set.completed) startTimer(rest);
-            renderWorkout();
-            setCookie(state);
-        }
-
-        function updateWeight(wId, exIdx, sIdx, val) {
-            const w = state.workoutsData.find(item => item.id === wId);
-            w.exercises[exIdx].setDetails[sIdx].weight = val;
-            setCookie(state);
-        }
-
-        function finishWorkout() {
-            state.completedWorkoutsCount++;
-            alert("Treino finalizado! Força bruta, Fábio.");
-            render();
-            setCookie(state);
-        }
-
-        // --- TIMER ---
-        function startTimer(sec) {
-            clearInterval(state.timer.interval);
-            state.timer.timeLeft = sec;
-            document.getElementById('timer-modal').classList.add('show');
-            
-            state.timer.interval = setInterval(() => {
-                state.timer.timeLeft--;
-                const min = Math.floor(state.timer.timeLeft / 60);
-                const s = state.timer.timeLeft % 60;
-                document.getElementById('timer-time').textContent = `${min}:${s < 10 ? '0' + s : s}`;
-                
-                if (state.timer.timeLeft <= 0) stopTimer();
-            }, 1000);
-        }
-
-        function stopTimer() {
-            clearInterval(state.timer.interval);
-            document.getElementById('timer-modal').classList.remove('show');
-        }
-        document.getElementById('timer-stop-button').onclick = stopTimer;
-
-        // --- ABA DIETA ---
         function renderDiet() {
-            const view = document.getElementById('dieta-view');
-            view.innerHTML = `
-                <div class="bg-gray-800 p-6 rounded-3xl border border-gray-700 mb-6 shadow-xl text-center">
-                    <h3 class="text-cyan-400 font-bold uppercase text-xs tracking-[0.2em] mb-4">Macros Diários (Cutting)</h3>
-                    <div class="flex justify-between items-center px-4">
-                        <div><p class="text-2xl font-bold">${mealPlanData.totalCalories}</p><p class="text-[10px] text-gray-400 uppercase">Kcal</p></div>
-                        <div class="w-px h-8 bg-gray-700"></div>
-                        <div><p class="text-2xl font-bold">${mealPlanData.macros.protein}g</p><p class="text-[10px] text-gray-400 uppercase">Proteína</p></div>
-                        <div class="w-px h-8 bg-gray-700"></div>
-                        <div><p class="text-2xl font-bold">${mealPlanData.macros.carbs}g</p><p class="text-[10px] text-gray-400 uppercase">Carbos</p></div>
-                        <div class="w-px h-8 bg-gray-700"></div>
-                        <div><p class="text-2xl font-bold">${mealPlanData.macros.fats}g</p><p class="text-[10px] text-gray-400 uppercase">Gordura</p></div>
+            document.getElementById('diet-container').innerHTML = `
+                <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 text-center shadow-lg mb-4">
+                    <h3 class="text-cyan-400 font-bold uppercase text-[10px] tracking-widest mb-4">Metas do Cutting</h3>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div><p class="text-lg font-bold">${diet.kcal}</p><p class="text-[7px] text-gray-500">KCAL</p></div>
+                        <div><p class="text-lg font-bold">${diet.p}g</p><p class="text-[7px] text-gray-500">PROT</p></div>
+                        <div><p class="text-lg font-bold">${diet.c}g</p><p class="text-[7px] text-gray-500">CARB</p></div>
+                        <div><p class="text-lg font-bold">${diet.g}g</p><p class="text-[7px] text-gray-500">GORD</p></div>
                     </div>
                 </div>
-                <div class="space-y-4">
-                    ${mealPlanData.meals.map(m => `
-                        <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 shadow-md">
-                            <div class="flex justify-between items-center mb-3">
-                                <h4 class="font-bold text-gray-200">${m.name}</h4>
-                                <span class="text-[10px] font-mono text-cyan-400 bg-cyan-400/10 px-2 py-1 rounded-md">${m.macros}</span>
-                            </div>
-                            <ul class="text-sm text-gray-400 space-y-1">
-                                ${m.options[0].items.map(i => `
-                                    <li class="flex justify-between"><span>${i.food}</span><span class="text-white font-semibold">${i.qty}</span></li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 mt-6">
-                    <h4 class="text-xs font-bold text-cyan-400 mb-4 uppercase tracking-widest flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg> Regras de Ouro
-                    </h4>
-                    <ul class="space-y-3">
-                        ${mealPlanData.rules.map(r => `
-                            <li class="flex items-start gap-3 text-xs text-gray-300">
-                                <div class="mt-0.5"><div class="w-1.5 h-1.5 rounded-full bg-cyan-400"></div></div>
-                                ${r.text}
-                            </li>
-                        `).join('')}
-                    </ul>
-                </div>
+                ${diet.meals.map(m => `
+                    <div class="bg-gray-800 p-4 rounded-2xl border border-white/5"><div class="flex justify-between mb-1"><h4 class="font-bold text-xs">${m.n} <span class="text-gray-500 text-[9px]">(${m.t})</span></h4><span class="text-[9px] font-mono text-cyan-400 font-bold">${m.m}</span></div><p class="text-xs text-gray-400">${m.i}</p></div>
+                `).join('')}
             `;
         }
 
-        // --- ABA PROGRESSO ---
-        let chartInstance = null;
         function renderProgress() {
-            const view = document.getElementById('progresso-view');
-            view.innerHTML = `
-                <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 mb-6">
-                    <h3 class="text-xs font-bold text-cyan-400 mb-4 uppercase">Bioimpedância Atual</h3>
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="bg-gray-900 p-3 rounded-xl text-center border border-gray-700">
-                            <p class="text-[10px] text-gray-500 uppercase">Peso</p>
-                            <p class="text-lg font-bold">${state.measurementHistory[state.measurementHistory.length - 1].peso}kg</p>
-                        </div>
-                        <div class="bg-gray-900 p-3 rounded-xl text-center border border-gray-700">
-                            <p class="text-[10px] text-gray-500 uppercase">Gordura</p>
-                            <p class="text-lg font-bold">${state.measurementHistory[state.measurementHistory.length - 1].gordura}%</p>
-                        </div>
-                        <div class="bg-gray-900 p-3 rounded-xl text-center border border-gray-700">
-                            <p class="text-[10px] text-gray-500 uppercase">Meta</p>
-                            <p class="text-lg font-bold text-cyan-400">10%</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 mb-6">
-                    <h3 class="text-xs font-bold text-cyan-400 mb-4 uppercase">Gráfico de Recomposição</h3>
-                    <div class="chart-container"><canvas id="pChart"></canvas></div>
-                </div>
-                <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700 mb-6">
-                    <h3 class="text-xs font-bold text-cyan-400 mb-4 uppercase">Novo Registro</h3>
-                    <div class="flex gap-2">
-                        <input id="newWeight" type="number" step="0.1" placeholder="PESO" class="bg-gray-900 border border-gray-700 p-3 rounded-xl flex-1 text-center font-bold focus:border-cyan-400 outline-none">
-                        <input id="newFat" type="number" step="0.1" placeholder="BF%" class="bg-gray-900 border border-gray-700 p-3 rounded-xl flex-1 text-center font-bold focus:border-cyan-400 outline-none">
-                        <button onclick="saveMeasure()" class="bg-cyan-600 px-5 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
-                    </div>
-                </div>
-            `;
-            initChart();
+            const last = state.history[state.history.length - 1];
+            document.getElementById('current-weight-card').textContent = `${last.w}kg`;
+            document.getElementById('current-fat-card').textContent = `${last.f}%`;
         }
 
-        function initChart() {
-            const ctx = document.getElementById('pChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: state.measurementHistory.map(h => h.date),
-                    datasets: [
-                        { label: 'Peso', data: state.measurementHistory.map(h => h.peso), borderColor: '#06B6D4', tension: 0.4 },
-                        { label: 'Gordura %', data: state.measurementHistory.map(h => h.gordura), borderColor: '#EF4444', tension: 0.4 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
-            });
-        }
-
-        function saveMeasure() {
-            const w = document.getElementById('newWeight').value;
-            const f = document.getElementById('newFat').value;
+        function addProgressEntry() {
+            const w = document.getElementById('input-weight').value;
+            const f = document.getElementById('input-fat').value;
             if (w && f) {
-                state.measurementHistory.push({ date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), peso: parseFloat(w), gordura: parseFloat(f) });
-                setCookie(state);
+                state.history.push({ d: new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}), w: parseFloat(w), f: parseFloat(f) });
+                document.getElementById('input-weight').value = '';
+                document.getElementById('input-fat').value = '';
+                save();
                 renderProgress();
+                alert("Progresso registrado!");
             }
         }
 
-        // --- UTILITÁRIOS ---
-        function calculateIMC(w) { return (w / (1.7 * 1.7)).toFixed(1); }
-        function openImg(src) { document.getElementById('modal-image-element').src = src; document.getElementById('image-modal').classList.add('show'); }
-        document.getElementById('image-modal-close').onclick = () => document.getElementById('image-modal').classList.remove('show');
-        
-        init();
+        function showFullImg(src) { document.getElementById('full-img-src').src = src; document.getElementById('full-img-modal').classList.add('show'); }
     </script>
 </body>
 </html>
