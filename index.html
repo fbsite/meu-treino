@@ -13,7 +13,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: white; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         .bg-gray-800 { background-color: #1e293b; }
         .text-cyan-400 { color: #22d3ee; }
         .hidden { display: none !important; }
@@ -39,22 +39,22 @@
             <p id="motivational-quote" class="text-gray-400 italic text-xs mt-3 px-4 leading-relaxed"></p>
         </header>
 
-        <!-- Ciclo de Datas -->
+        <!-- Ciclo de Datas Atualizado -->
         <div class="bg-gray-800 p-4 rounded-2xl border border-white/5 mb-6 shadow-xl">
             <div class="flex justify-between items-center text-center">
                 <div>
                     <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Início do Ciclo</p>
-                    <p class="text-sm font-bold text-white">29/12/2025</p>
+                    <p class="text-sm font-bold">02/03/2026</p>
                 </div>
                 <div class="h-6 w-px bg-gray-700"></div>
                 <div>
                     <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Meta 10% BF</p>
-                    <p class="text-sm font-bold text-cyan-400">01/03/2026</p>
+                    <p class="text-sm font-bold text-cyan-400">02/05/2026</p>
                 </div>
             </div>
         </div>
 
-        <!-- Navegação Principal -->
+        <!-- Navegação -->
         <nav class="flex bg-gray-800 rounded-2xl p-1 mb-6 border border-white/5 shadow-inner">
             <button onclick="switchTab('treino')" id="tab-btn-treino" class="nav-btn flex-1 py-3 rounded-xl text-xs font-bold transition-all active-tab">TREINO</button>
             <button onclick="switchTab('dieta')" id="tab-btn-dieta" class="nav-btn flex-1 py-3 rounded-xl text-xs font-bold transition-all text-gray-400">DIETA</button>
@@ -81,16 +81,20 @@
 
             <!-- View: Dieta -->
             <div id="view-dieta" class="view-content hidden">
+                <div class="flex bg-gray-900/50 p-1 rounded-xl mb-6 border border-white/5 shadow-inner">
+                    <button onclick="switchDietMode('treino')" id="diet-mode-treino" class="flex-1 py-2 rounded-lg text-[10px] font-bold transition-all bg-cyan-600 text-white">DIA DE TREINO</button>
+                    <button onclick="switchDietMode('descanso')" id="diet-mode-descanso" class="flex-1 py-2 rounded-lg text-[10px] font-bold transition-all text-gray-500">DIA DE DESCANSO</button>
+                </div>
                 <div id="diet-container" class="space-y-4"></div>
             </div>
 
-            <!-- View: Progresso -->
+            <!-- View: Progresso (Bioimpedância Atualizada) -->
             <div id="view-progresso" class="view-content hidden">
-                <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg mb-6 text-center">
+                <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg mb-6">
                     <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/5">
-                         <div class="flex flex-col text-left">
-                            <span class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Idade</span>
-                            <span class="text-sm font-bold">35 Anos</span>
+                         <div class="flex flex-col">
+                            <span class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Idade Corporal</span>
+                            <span class="text-sm font-bold">34 Anos</span>
                         </div>
                         <div class="flex flex-col text-right">
                             <span class="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Altura</span>
@@ -101,26 +105,26 @@
                     <div class="grid grid-cols-2 gap-3 mb-3">
                         <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center shadow-inner">
                             <p class="text-[9px] text-gray-500 uppercase mb-1">Peso Atual</p>
-                            <p id="current-weight-card" class="text-xl font-bold text-white">74.7kg</p>
+                            <p id="current-weight-card" class="text-xl font-bold text-white">70.6kg</p>
                         </div>
                         <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center shadow-inner">
                             <p class="text-[9px] text-gray-500 uppercase mb-1">Gordura Atual</p>
-                            <p id="current-fat-card" class="text-xl font-bold text-cyan-400">21.1%</p>
+                            <p id="current-fat-card" class="text-xl font-bold text-cyan-400">15.3%</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5">
+                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5 text-center">
                             <p class="text-[8px] text-gray-500 uppercase">Músculo</p>
-                            <p class="text-xs font-bold text-white">38.9kg</p>
+                            <p class="text-xs font-bold text-white">42%</p>
                         </div>
-                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5">
+                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5 text-center">
                             <p class="text-[8px] text-gray-500 uppercase">Visceral</p>
-                            <p class="text-xs font-bold text-white">9</p>
+                            <p class="text-xs font-bold text-white">7</p>
                         </div>
-                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5">
+                        <div class="bg-gray-900/50 p-2 rounded-xl border border-white/5 text-center">
                             <p class="text-[8px] text-gray-500 uppercase">Basal</p>
-                            <p class="text-xs font-bold text-white">1700kcal</p>
+                            <p class="text-xs font-bold text-white">1649<span class="text-[8px]">kcal</span></p>
                         </div>
                     </div>
                 </div>
@@ -130,12 +134,12 @@
                     <div class="flex flex-col gap-4">
                         <div class="flex gap-3">
                             <div class="w-1/2">
-                                <label class="block text-[8px] text-gray-500 uppercase font-bold mb-1 ml-1">Peso (kg)</label>
-                                <input id="input-weight" type="number" step="0.1" placeholder="00.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-white outline-none focus:border-cyan-400 transition-all">
+                                <label class="block text-[8px] text-gray-500 uppercase font-bold mb-1 ml-1 text-center">Peso (kg)</label>
+                                <input id="input-weight" type="number" step="0.1" placeholder="00.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-white outline-none focus:border-cyan-400">
                             </div>
                             <div class="w-1/2">
-                                <label class="block text-[8px] text-gray-500 uppercase font-bold mb-1 ml-1">Gordura (%)</label>
-                                <input id="input-fat" type="number" step="0.1" placeholder="00.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-cyan-400 outline-none focus:border-cyan-400 transition-all">
+                                <label class="block text-[8px] text-gray-500 uppercase font-bold mb-1 ml-1 text-center">Gordura (%)</label>
+                                <input id="input-fat" type="number" step="0.1" placeholder="00.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-cyan-400 outline-none focus:border-cyan-400">
                             </div>
                         </div>
                         <button onclick="addProgressEntry()" class="w-full bg-cyan-600 py-3.5 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-cyan-500 active:scale-95 transition-all shadow-lg">Registrar Evolução</button>
@@ -146,7 +150,7 @@
                     <h3 class="text-xs font-bold text-cyan-400 mb-4 uppercase tracking-widest text-center">Perímetros de Referência (cm)</h3>
                     <div id="perimeters-list" class="grid grid-cols-2 gap-x-4 gap-y-2"></div>
                 </div>
-            </div>
+            </section>
         </main>
 
         <!-- Modais -->
@@ -163,26 +167,26 @@
         </div>
 
         <footer class="text-center mt-12 text-gray-600">
-            <p class="text-[9px] uppercase tracking-[0.4em]">Fábio Performance App • v7.9</p>
+            <p class="text-[9px] uppercase tracking-[0.4em]">Fábio Performance App • v8.1</p>
         </footer>
     </div>
 
     <script>
-        // --- DATA INTEGRAL (PROTOCOLO UPPER-MASS) ---
+        // --- DATA ---
         const quotes = [
-            "Fábio, visualiza os 10% de BF todos os dias.",
-            "Consistência vence o talento. Todo santo dia.",
-            "Disciplina é a ponte entre metas e realizações.",
-            "Não pare quando estiver cansado, pare quando terminar.",
-            "Peito largo e braços fortes: foco total na técnica.",
-            "O sucesso é a soma de pequenos esforços diários.",
-            "Não negocie com a sua mente. Apenas faça."
+            "Fábio, você está a apenas 5% da meta final. Foco total!",
+            "O músculo 42% é sua armadura. Proteja-a com carga.",
+            "Visualiza os 10% de BF e não para até chegar lá.",
+            "Cumpra o plano. A glória é inegociável.",
+            "Disciplina é fazer o que precisa ser feito.",
+            "A dor da disciplina é menor que a dor do arrependimento.",
+            "Menos 4kg de gordura para o shape lendário. Vamos!"
         ];
 
         const workoutData = [
             { id: 'a', day: 'Seg', name: 'A: Peito & Deltoide Frontal (Cargas)', exercises: [
-                { n: 'Supino Reto Barra', s: 5, r: '5', d: 150, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif', t: 'Foco em carga - Explosão' },
-                { n: 'Supino Inclinado Halteres', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Bench-Press.gif', t: 'Controlar descida 3s' },
+                { n: 'Supino Reto Barra', s: 5, r: '5', d: 150, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif', t: 'Foco total em carga - Explosão' },
+                { n: 'Supino Inclinado Halteres', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Bench-Press.gif', t: 'Controlo excêntrico 3s' },
                 { n: 'Desenvolvimento Militar Barra', s: 4, r: '6-8', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Overhead-Press.gif', t: 'Tronco firme, sem impulso' },
                 { n: 'Crucifixo Máquina / Polia', s: 3, r: '12-15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pec-Deck-Fly.gif', t: 'Pico de contração 2s' },
                 { n: 'Elevação Frontal Polia', s: 3, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Front-Raise.gif' }
@@ -220,47 +224,44 @@
                 { n: 'Desenvolvimento Arnold', s: 4, r: '10-12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Arnold-Press.gif' },
                 { n: 'Elevação Lateral Halteres', s: 5, r: '15-20', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif', t: 'Rest-Pause na última série' },
                 { n: 'Face Pull', s: 4, r: '20', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Face-Pull.gif' },
-                { n: 'Rosca Concentrada', s: 3, r: '12', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Concentration-Curl.gif' },
-                { n: 'Abdominal Roda', s: 4, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Ab-Roller.gif' }
+                { n: 'Abdominal Roda', s: 4, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Ab-Roller.gif' },
+                { n: 'Prancha Isométrica', s: 3, r: '1 min', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Plank.gif' }
             ]}
         ];
 
-        const diet = {
-            kcal: 2050, p: 165, c: 190, g: 65,
-            meals: [
-                { t: "07:00", n: "Pequeno-almoço", m: "30P|40C|12G", i: "4 claras + 2 ovos inteiros, 40g aveia, 1 banana" },
-                { t: "10:00", n: "Lanche", m: "35P|30C|9G", i: "150g frango, 2 fatias pão integral, 10g pasta amendoim" },
-                { t: "13:00", n: "Almoço", m: "40P|30C|12G", i: "150g frango/patinho, 100g arroz integral, salada + azeite" },
-                { t: "16:30", n: "Pré-treino", m: "35P|35C|5G", i: "150g batata-doce, 150g frango/peixe" },
-                { t: "19:00", n: "Pós-treino", m: "25P|25C|1G", i: "1 scoop whey, 1 banana" },
-                { t: "22:00", n: "Ceia", m: "30P|10C|15G", i: "200g peixe, brócolis, 10g castanhas" }
-            ]
+        const nutritionData = {
+            treino: { kcal: 2400, p: 155, c: 300, g: 65, meals: [
+                { t: "07:00", n: "Ao Acordar & Suplementação", m: "Micro-nutrição", i: "Café + 150g Leite desnatado. (Multi + 3g Ômega 3)" },
+                { t: "07:30", n: "Refeição 1 (Pré-Treino)", m: "Glicogênio", i: "Vitamina (100g banana, 70g maçã, 30g Whey, 200g leite) OU Mingau (60g Aveia, 30g Whey)." },
+                { t: "12:00", n: "Refeição 3 (Almoço)", m: "Anabolismo", i: "180g Frango + 100g Arroz + 150g Feijão. Sobremesa: 150g fruta." },
+                { t: "19:00", n: "Refeição 5 (Jantar)", m: "Proteína Densidade", i: "200g Carne moída + 200g Brócolis/Couve-flor." },
+                { t: "21:30", n: "Refeição 6 (Ceia)", m: "Proteína Lenta", i: "220g Ovos mexidos (4 un) OU 170g Iogurte Grego + 15g Granola." }
+            ]},
+            descanso: { kcal: 2000, p: 155, c: 180, g: 75, meals: [
+                { t: "07:00", n: "Pequeno-almoço", m: "Saciedade", i: "Café 150g leite + 220g Ovos mexidos + 50g Pão integral." },
+                { t: "11:00", n: "Almoço", m: "Oxidação", i: "200g Carne moída + Salada verde à vontade." },
+                { t: "18:00", n: "Jantar", m: "Low Carb", i: "200g Frango grelhado + 100g Abacate." },
+                { t: "21:00", n: "Ceia", m: "Recovery", i: "170g Iogurte Grego Natural." }
+            ]}
         };
 
-        const initialMeasures = { "Braço E": 35, "Braço D": 37, "Tórax": 93, "Abdome": 82, "Cintura": 84, "Coxa E": 59, "Coxa D": 60, "Pant. E": 38, "Pant. D": 38, "Ombro": 121 };
+        const initialMeasures = { "Braço E": 35.0, "Braço D": 37.0, "Tórax": 93.0, "Abdome": 82.0, "Cintura": 84.0, "Coxa E": 59.0, "Coxa D": 60.0, "Pant. E": 38.0, "Pant. D": 38.0, "Ombro": 121.0 };
 
         // --- STATE & STORAGE ---
-        const COOKIE_KEY = 'fabio_v7_9_final';
+        const COOKIE_KEY = 'fabio_v8_1_final';
         let state = {
             tab: 'treino',
+            dietMode: 'treino',
             workoutId: 'a',
-            history: [{ d: '29/12', w: 74.7, f: 21.1 }],
+            history: [{ d: '25/02', w: 70.6, f: 15.3 }],
             logs: {},
             measures: { ...initialMeasures }
         };
 
         let timerInterval = null;
 
-        // --- MOTOR ---
-        window.onload = function() {
-            load();
-            initUI();
-            switchTab(state.tab);
-        };
-
         function save() {
-            const date = new Date();
-            date.setFullYear(date.getFullYear() + 1);
+            const date = new Date(); date.setFullYear(date.getFullYear() + 1);
             document.cookie = `${COOKIE_KEY}=${encodeURIComponent(JSON.stringify(state))}; expires=${date.toUTCString()}; path=/; SameSite=Lax`;
         }
 
@@ -268,6 +269,9 @@
             const match = document.cookie.match(new RegExp('(^| )' + COOKIE_KEY + '=([^;]+)'));
             if (match) { try { state = { ...state, ...JSON.parse(decodeURIComponent(match[2])) }; } catch(e) {} }
         }
+
+        // --- MOTOR ---
+        window.onload = function() { load(); initUI(); switchTab(state.tab); };
 
         function initUI() {
             const today = new Date().getDate();
@@ -295,44 +299,37 @@
             state.tab = t;
             document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab', 'text-white'));
-            
             document.getElementById(`view-${t}`).classList.remove('hidden');
             document.getElementById(`tab-btn-${t}`).classList.add('active-tab', 'text-white');
-
             if (t === 'treino') renderWorkout();
             if (t === 'dieta') renderDiet();
             if (t === 'progresso') renderProgress();
             save();
         }
 
-        function toggleWorkoutDropdown() {
-            document.getElementById('workout-dropdown').classList.toggle('show');
-            document.getElementById('dropdown-icon').classList.toggle('rotate-180');
-        }
-
-        function selectWorkout(id) {
-            state.workoutId = id;
-            document.getElementById('workout-dropdown').classList.remove('show');
-            renderWorkout();
+        function switchDietMode(mode) {
+            state.dietMode = mode;
+            document.getElementById('diet-mode-treino').classList.toggle('bg-cyan-600', mode === 'treino');
+            document.getElementById('diet-mode-treino').classList.toggle('text-white', mode === 'treino');
+            document.getElementById('diet-mode-treino').classList.toggle('text-gray-500', mode !== 'treino');
+            document.getElementById('diet-mode-descanso').classList.toggle('bg-cyan-600', mode === 'descanso');
+            document.getElementById('diet-mode-descanso').classList.toggle('text-white', mode === 'descanso');
+            document.getElementById('diet-mode-descanso').classList.toggle('text-gray-500', mode !== 'descanso');
+            renderDiet();
             save();
         }
 
         function renderWorkout() {
             const current = workoutData.find(w => w.id === state.workoutId);
             document.getElementById('display-workout-name').textContent = current.name;
-
             document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`day-${state.workoutId}`).classList.add('active');
-
             const list = document.getElementById('exercise-list');
             list.innerHTML = current.exercises.map((ex, exIdx) => `
                 <div class="bg-gray-800 rounded-3xl p-5 border border-white/5 shadow-lg">
                     <div class="flex justify-between items-start mb-4">
-                        <div class="flex-1 pr-2">
-                            <h4 class="font-bold text-white text-base leading-tight">${ex.n}</h4>
-                            <p class="text-[10px] text-gray-500 uppercase mt-1 tracking-widest">${ex.s} séries • ${ex.r} reps • ${ex.d}s</p>
-                            ${ex.t ? `<p class="text-[9px] text-amber-400 font-bold uppercase mt-1 italic tracking-tight">★ ${ex.t}</p>` : ''}
-                        </div>
+                        <div class="flex-1 pr-2"><h4 class="font-bold text-white text-base leading-tight">${ex.n}</h4><p class="text-[10px] text-gray-500 uppercase mt-1 tracking-widest">${ex.s} séries • ${ex.r} reps</p>
+                        ${ex.t ? `<p class="text-[9px] text-amber-400 font-bold uppercase mt-1 italic tracking-tight">★ ${ex.t}</p>` : ''}</div>
                         <img onclick="showFullImg('${ex.g}')" src="${ex.g}" class="w-14 h-14 rounded-xl object-cover bg-black/20 border border-white/10" onerror="this.src='https://placehold.co/100?text=GIF'">
                     </div>
                     <div class="space-y-2">
@@ -341,7 +338,7 @@
                             const l = state.logs[k] || { done: false, kg: '' };
                             return `
                                 <div class="flex items-center gap-2">
-                                    <div class="bg-gray-900 rounded-2xl flex-1 flex items-center px-4 py-2.5 border border-white/5">
+                                    <div class="bg-gray-900 rounded-2xl flex-1 flex items-center px-4 py-2 border border-white/5">
                                         <span class="text-[9px] font-bold text-gray-600 mr-2 uppercase">SET ${sIdx+1}</span>
                                         <input type="number" onchange="updateKg('${k}', this.value)" value="${l.kg}" placeholder="0" class="bg-transparent w-full text-center text-sm font-bold text-cyan-400 outline-none">
                                         <span class="text-[9px] text-gray-700 ml-1">KG</span>
@@ -354,46 +351,33 @@
                         }).join('')}
                     </div>
                 </div>
-            `).join('');
+            `).join('') + `<button onclick="alert('Boa sessão, Fábio! Rumo aos 10% BF.')" class="w-full bg-cyan-600 py-5 rounded-3xl font-bold text-xs tracking-[0.2em] shadow-xl transition-all active:scale-95">CONCLUIR TREINO</button>`;
         }
-
-        function markSet(k, rest) {
-            if (!state.logs[k]) state.logs[k] = { done: false, kg: '' };
-            state.logs[k].done = !state.logs[k].done;
-            if (state.logs[k].done) startTimer(rest);
-            renderWorkout();
-            save();
-        }
-
-        function updateKg(k, v) {
-            if (!state.logs[k]) state.logs[k] = { done: false, kg: '' };
-            state.logs[k].kg = v;
-            save();
-        }
-
-        function startTimer(sec) {
-            let left = sec;
-            document.getElementById('timer-modal').classList.add('show');
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                left--;
-                document.getElementById('timer-clock').textContent = `${Math.floor(left / 60)}:${(left % 60).toString().padStart(2, '0')}`;
-                if (left <= 0) skipTimer();
-            }, 1000);
-        }
-
-        function skipTimer() { clearInterval(timerInterval); document.getElementById('timer-modal').classList.remove('show'); }
 
         function renderDiet() {
-            document.getElementById('diet-container').innerHTML = diet.meals.map(m => `
-                <div class="bg-gray-800 p-4 rounded-2xl border border-white/5 shadow-lg">
-                    <div class="flex justify-between mb-2">
-                        <h4 class="font-bold text-xs text-white">${m.n} <span class="text-gray-500 text-[10px] ml-1">(${m.t})</span></h4>
-                        <span class="text-[9px] font-mono text-cyan-400 font-bold bg-cyan-400/10 px-2 py-0.5 rounded-md">${m.m}</span>
+            const data = nutritionData[state.dietMode];
+            document.getElementById('diet-container').innerHTML = `
+                <div class="bg-gray-800 p-5 rounded-3xl border border-white/5 text-center shadow-lg mb-6">
+                    <h3 class="text-cyan-400 font-bold uppercase text-[10px] tracking-widest mb-4">Meta Alvo</h3>
+                    <div class="grid grid-cols-4 gap-2 px-2">
+                        <div><p class="text-lg font-bold">${data.kcal}</p><p class="text-[7px] text-gray-500 uppercase">Kcal</p></div>
+                        <div><p class="text-lg font-bold">${data.p}g</p><p class="text-[7px] text-gray-500 uppercase">Prot</p></div>
+                        <div><p class="text-lg font-bold">${data.c}g</p><p class="text-[7px] text-gray-500 uppercase">Carb</p></div>
+                        <div><p class="text-lg font-bold">${data.g}g</p><p class="text-[7px] text-gray-500 uppercase">Gord</p></div>
                     </div>
-                    <p class="text-xs text-gray-400 leading-relaxed">${m.i}</p>
                 </div>
-            `).join('');
+                <div class="space-y-3">
+                    ${data.meals.map(m => `
+                        <div class="bg-gray-800 p-4 rounded-2xl border border-white/5">
+                            <div class="flex justify-between mb-1">
+                                <h4 class="font-bold text-xs text-white">${m.n} <span class="text-gray-500 text-[10px] ml-1">(${m.t})</span></h4>
+                                <span class="text-[9px] font-mono text-cyan-400 font-bold">${m.m}</span>
+                            </div>
+                            <p class="text-xs text-gray-400 leading-relaxed">${m.i}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
         }
 
         function renderProgress() {
@@ -402,21 +386,14 @@
             document.getElementById('current-fat-card').textContent = `${last.f}%`;
         }
 
-        function addProgressEntry() {
-            const w = document.getElementById('input-weight').value;
-            const f = document.getElementById('input-fat').value;
-            if (w && f) {
-                state.history.push({ d: new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}), w: parseFloat(w), f: parseFloat(f) });
-                document.getElementById('input-weight').value = '';
-                document.getElementById('input-fat').value = '';
-                save();
-                renderProgress();
-                alert("Progresso registrado!");
-            }
-        }
-
+        function selectWorkout(id) { state.workoutId = id; document.getElementById('workout-dropdown').classList.remove('show'); renderWorkout(); save(); }
+        function toggleWorkoutDropdown() { document.getElementById('workout-dropdown').classList.toggle('show'); document.getElementById('dropdown-icon').classList.toggle('rotate-180'); }
+        function markSet(k, rest) { state.logs[k] = state.logs[k] || { done: false, kg: '' }; state.logs[k].done = !state.logs[k].done; if (state.logs[k].done) startTimer(rest); renderWorkout(); save(); }
+        function updateKg(k, v) { if (!state.logs[k]) state.logs[k] = { done: false, kg: '' }; state.logs[k].kg = v; save(); }
+        function startTimer(sec) { let left = sec; document.getElementById('timer-modal').classList.add('show'); clearInterval(timerInterval); timerInterval = setInterval(() => { left--; document.getElementById('timer-clock').textContent = `${Math.floor(left / 60)}:${(left % 60).toString().padStart(2, '0')}`; if (left <= 0) skipTimer(); }, 1000); }
+        function skipTimer() { clearInterval(timerInterval); document.getElementById('timer-modal').classList.remove('show'); }
+        function addProgressEntry() { const w = document.getElementById('input-weight').value; const f = document.getElementById('input-fat').value; if (w && f) { state.history.push({ d: new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}), w: parseFloat(w), f: parseFloat(f) }); document.getElementById('input-weight').value = ''; document.getElementById('input-fat').value = ''; save(); renderProgress(); alert("Progresso registrado!"); } }
         function showFullImg(src) { document.getElementById('full-img-src').src = src; document.getElementById('full-img-modal').classList.add('show'); }
-
     </script>
 </body>
 </html>
