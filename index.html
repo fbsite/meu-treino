@@ -1,11 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
-
-<!-- Favicon .ico -->
-  <link rel="icon" type="image/x-icon" href="https://i.supaimg.com/e7c4bf0e-aa4f-48ab-946d-edfa535b391a.png">
-  <link rel="shortcut icon" href=https://i.supaimg.com/e7c4bf0e-aa4f-48ab-946d-edfa535b391a.png">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="robots" content="noindex, nofollow">
@@ -31,7 +26,6 @@
         .active-tab { background-color: #0891b2 !important; color: white !important; }
         .day-btn.active { background-color: #0891b2 !important; border-color: #22d3ee !important; color: white !important; }
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-        /* Correção para inputs em telas pequenas */
         .input-group { min-width: 0; flex: 1; }
     </style>
 </head>
@@ -48,22 +42,22 @@
             <p id="motivational-quote" class="text-gray-400 italic text-[11px] mt-3 px-4 leading-relaxed"></p>
         </header>
 
-        <!-- Datas -->
+        <!-- Cronograma do Ciclo -->
         <div class="bg-gray-800 p-4 rounded-2xl border border-white/5 mb-6 shadow-xl">
             <div class="flex justify-between items-center text-center">
                 <div>
-                    <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Início</p>
-                    <p class="text-sm font-bold">02/03/2026</p>
+                    <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Início do Ciclo</p>
+                    <p class="text-sm font-bold">17/08/2026</p>
                 </div>
                 <div class="h-6 w-px bg-gray-700"></div>
                 <div>
                     <p class="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1">Meta 10% BF</p>
-                    <p class="text-sm font-bold text-cyan-400">02/05/2026</p>
+                    <p class="text-sm font-bold text-cyan-400">17/10/2026</p>
                 </div>
             </div>
         </div>
 
-        <!-- Navegação -->
+        <!-- Navegação Principal -->
         <nav class="flex bg-gray-800 rounded-2xl p-1 mb-6 border border-white/5 shadow-inner">
             <button onclick="switchTab('treino')" id="tab-btn-treino" class="nav-btn flex-1 py-3 rounded-xl text-xs font-bold transition-all active-tab">TREINO</button>
             <button onclick="switchTab('dieta')" id="tab-btn-dieta" class="nav-btn flex-1 py-3 rounded-xl text-xs font-bold transition-all text-gray-400">DIETA</button>
@@ -75,14 +69,14 @@
             <section id="view-treino" class="view-content">
                 <div class="relative mb-4">
                     <button onclick="toggleWorkoutDropdown()" class="w-full bg-gray-800 border border-white/5 rounded-2xl px-5 py-4 text-left flex justify-between items-center shadow-lg">
-                        <span id="display-workout-name" class="font-bold text-sm text-cyan-400">Selecionar Treino...</span>
+                        <span id="display-workout-name" class="font-bold text-sm text-cyan-400">A carregar o treino...</span>
                         <svg id="dropdown-icon" class="transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                     </button>
                     <div id="workout-dropdown" class="dropdown-content absolute top-full left-0 right-0 bg-gray-800 border border-white/10 mt-2 rounded-2xl z-50 shadow-2xl overflow-hidden"></div>
                 </div>
 
                 <div class="bg-gray-800 p-4 rounded-2xl border border-white/5 mb-6">
-                    <div class="grid grid-cols-6 gap-2" id="day-selector"></div>
+                    <div class="grid grid-cols-3 gap-2" id="day-selector"></div>
                 </div>
 
                 <div id="exercise-list" class="space-y-4"></div>
@@ -90,7 +84,7 @@
 
             <!-- ABA DIETA -->
             <section id="view-dieta" class="view-content hidden">
-                <div class="flex bg-gray-900/50 p-1 rounded-xl mb-6 border border-white/5">
+                <div class="flex bg-gray-900/50 p-1 rounded-xl mb-6 border border-white/5 shadow-inner">
                     <button onclick="switchDietMode('treino')" id="diet-mode-treino" class="flex-1 py-2 rounded-lg text-[10px] font-bold transition-all bg-cyan-600 text-white">DIA DE TREINO</button>
                     <button onclick="switchDietMode('descanso')" id="diet-mode-descanso" class="flex-1 py-2 rounded-lg text-[10px] font-bold transition-all text-gray-500">DIA DE DESCANSO</button>
                 </div>
@@ -112,11 +106,11 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center">
+                        <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center shadow-inner">
                             <p class="text-[9px] text-gray-500 uppercase mb-1 font-bold">Peso Atual</p>
                             <p id="current-weight-card" class="text-xl font-bold text-white">70.6kg</p>
                         </div>
-                        <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center">
+                        <div class="bg-gray-900/50 p-4 rounded-2xl border border-white/5 text-center shadow-inner">
                             <p class="text-[9px] text-gray-500 uppercase mb-1 font-bold">Gordura Atual</p>
                             <p id="current-fat-card" class="text-xl font-bold text-cyan-400">15.3%</p>
                         </div>
@@ -138,8 +132,9 @@
                     </div>
                 </div>
 
+                <!-- Registo de Evolução (Layout Ajustado sem estouro) -->
                 <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg mb-6">
-                    <h3 class="text-xs font-bold text-gray-400 mb-4 uppercase text-center tracking-widest">Novo Registro</h3>
+                    <h3 class="text-xs font-bold text-gray-400 mb-4 uppercase text-center tracking-widest">Novo Registo</h3>
                     <div class="flex flex-col gap-4">
                         <div class="flex gap-3">
                             <div class="input-group">
@@ -151,23 +146,23 @@
                                 <input id="input-fat" type="number" step="0.1" placeholder="0.0" class="w-full bg-gray-900 border border-white/10 p-3 rounded-xl text-center font-bold text-cyan-400 outline-none focus:border-cyan-400">
                             </div>
                         </div>
-                        <button onclick="addProgressEntry()" class="w-full bg-cyan-600 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest active:scale-95 shadow-lg">Salvar Dados</button>
+                        <button onclick="addProgressEntry()" class="w-full bg-cyan-600 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest active:scale-95 shadow-lg">Guardar Dados</button>
                     </div>
                 </div>
 
                 <div class="bg-gray-800 p-5 rounded-2xl border border-white/5 shadow-lg">
-                    <h3 class="text-xs font-bold text-cyan-400 mb-4 uppercase tracking-widest text-center">Medidas Fixas (Referência)</h3>
+                    <h3 class="text-xs font-bold text-cyan-400 mb-4 uppercase tracking-widest text-center">Medidas de Perímetro (cm)</h3>
                     <div id="perimeters-list" class="grid grid-cols-2 gap-x-4 gap-y-2"></div>
                 </div>
             </section>
         </main>
 
         <!-- Modais -->
-        <div id="timer-modal" class="modal fixed inset-0 bg-black/90 items-center justify-center z-[100]">
+        <div id="timer-modal" class="modal fixed inset-0 bg-black/95 items-center justify-center z-[100]">
             <div class="bg-gray-800 rounded-[40px] p-10 text-center border border-cyan-500/20 shadow-2xl">
                 <h3 class="text-cyan-400 uppercase text-xs tracking-[0.3em] mb-4 font-bold">Descanso</h3>
                 <p id="timer-clock" class="text-7xl font-mono font-bold text-white mb-8 tracking-tighter">0:00</p>
-                <button onclick="skipTimer()" class="bg-white/5 text-white border border-white/10 px-12 py-2 rounded-full font-bold text-xs uppercase tracking-widest">Pular</button>
+                <button onclick="skipTimer()" class="bg-white/5 text-white border border-white/10 px-12 py-2 rounded-full font-bold text-xs uppercase tracking-widest">Ignorar</button>
             </div>
         </div>
 
@@ -176,82 +171,73 @@
         </div>
 
         <footer class="text-center mt-12 text-gray-600">
-            <p class="text-[9px] uppercase tracking-[0.4em]">Fábio Performance • v8.3 GitHub Ready</p>
+            <p class="text-[9px] uppercase tracking-[0.4em]">Fábio Performance App • v8.5</p>
         </footer>
     </div>
 
     <script>
         // --- DATA ---
         const quotes = [
-            "Fábio, visualiza os 10% de BF todos os dias.",
-            "Consistência vence o talento. Todo santo dia.",
-            "O músculo 42% é a tua armadura. Mantém a carga!",
-            "Disciplina é a ponte entre metas e realizações.",
-            "Peito largo e braços fortes: foco total no 5x5.",
-            "Não negocie com a sua mente. Apenas faça.",
-            "Cumpra o plano. A glória é inevitável."
+            "Fábio, a tua força está a subir. Usa esse impulso para construir um peitoral lendário!",
+            "Consistência e técnica avançada: o segredo para rasgar até aos 10% de BF.",
+            "Cada repetição com cadência controlada molda a tua densidade muscular.",
+            "Supera o teu limite mecânico. O peito responde à tensão e à força!",
+            "Sem distrações. Foco total em cada repetição e em cada técnica avançada.",
+            "Cumpra o plano com rigor. O teu físico de elite está mais próximo do que nunca."
         ];
 
+        // TREINO ABC CHEST-FOCUS COM 100% TÉCNICAS AVANÇADAS
         const workoutData = [
-            { id: 'a', day: 'Seg', name: 'A: Peito & Deltoide Frontal (Força)', exercises: [
-                { n: 'Supino Reto Barra', s: 5, r: '5', d: 150, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif', t: 'Foco total em carga - Explosão' },
-                { n: 'Supino Inclinado Halteres', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Bench-Press.gif', t: 'Controlo excêntrico 3s' },
-                { n: 'Desenvolvimento Militar Barra', s: 4, r: '6-8', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Overhead-Press.gif' },
-                { n: 'Crucifixo Máquina / Polia', s: 3, r: '12-15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pec-Deck-Fly.gif', t: 'Isometria 2s no pico' }
+            { id: 'a', day: 'Treino A', name: 'A: Peito Supremo & Tríceps (Mecânica Pesada)', exercises: [
+                { n: 'Supino Reto Barra', s: 4, r: '5-6', d: 150, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif', t: 'Rest-Pause na última série (pausa de 15s e mais reps até à falha) + Cadência 3s excêntrica' },
+                { n: 'Supino Inclinado Halteres', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Bench-Press.gif', t: 'Cluster Set (3 mini-blocos de 3 reps com 10s de descanso mantendo carga máxima)' },
+                { n: 'Crucifixo Reto Polia (Crossover)', s: 3, r: '10-12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Crossover.gif', t: 'Isometria de 3s no pico de contração + Drop-set triplo no final' },
+                { n: 'Mergulho em Paralelas (Peito)', s: 3, r: 'Falha', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dip.gif', t: 'Repetições Negativas Lentas (5 segundos de descida em cada repetição)' },
+                { n: 'Tríceps Testa Barra W', s: 4, r: '10-12', d: 75, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Skullcrusher.gif', t: 'Bi-set imediato com Supino Fechado até à falha' }
             ]},
-            { id: 'b', day: 'Ter', name: 'B: Costas & Posterior (Força)', exercises: [
-                { n: 'Levantamento Terra', s: 5, r: '5', d: 180, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Deadlift.gif', t: 'Escápulas travadas' },
-                { n: 'Remada Curvada Barra', s: 4, r: '8', d: 120, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bent-Over-Row.gif', t: 'Tronco paralelo ao chão' },
-                { n: 'Barra Fixa', s: 4, r: 'Falha', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pull-up.gif', t: 'Carga extra' },
-                { n: 'Crucifixo Invertido Halteres', s: 4, r: '15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Rear-Lateral-Raise.gif' }
+            { id: 'b', day: 'Treino B', name: 'B: Membros Inferiores, Ombros & Core (Base & Estabilidade)', exercises: [
+                { n: 'Agachamento Livre Barra', s: 4, r: '6-8', d: 150, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Squat.gif', t: 'Pausa Isométrica de 2s no ponto cego (fundo da execução)' },
+                { n: 'Leg Press 45º', s: 4, r: '10-12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/03/Leg-Press.gif', t: 'Drop-Set duplo na última série (redução de 30% da carga 2x)' },
+                { n: 'Stiff com Barra', s: 4, r: '10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Stiff-Leg-Deadlift.gif', t: 'Cadência Excêntrica de 4 segundos na descida' },
+                { n: 'Desenvolvimento Militar Barra', s: 4, r: '6-8', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Overhead-Press.gif', t: 'Rest-Pause de 15s após atingir a falha mecânica' },
+                { n: 'Elevação Lateral Halteres', s: 4, r: '12-15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif', t: 'Strip Set (redução dupla de peso mantendo a forma até à falha total)' },
+                { n: 'Abdominal Roda (Ab Roller)', s: 4, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Ab-Roller.gif', t: 'Isometria de 2s no ponto de máxima extensão' }
             ]},
-            { id: 'c', day: 'Qua', name: 'C: Inferiores (Quadríceps Focus)', exercises: [
-                { n: 'Agachamento Livre', s: 4, r: '8', d: 150, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Squat.gif' },
-                { n: 'Leg Press 45', s: 4, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/03/Leg-Press.gif' },
-                { n: 'Cadeira Extensora', s: 4, r: '15 + DropSet', d: 60, g: 'https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/cadeira-extensora.gif', t: 'Drop-set na última' },
-                { n: 'Panturrilha em Pé', s: 5, r: '20', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Standing-Calf-Raise.gif' }
-            ]},
-            { id: 'd', day: 'Qui', name: 'D: Braços Completo (Hipertrofia)', exercises: [
-                { n: 'Supino Fechado (Tríceps)', s: 4, r: '8', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Close-Grip-Bench-Press.gif' },
-                { n: 'Rosca Direta Barra W', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Curl.gif' },
-                { n: 'Tríceps Testa Polia', s: 3, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Triceps-Extension.gif' },
-                { n: 'Rosca Martelo Halteres', s: 3, r: '12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/Hammer-Curl.gif' },
-                { n: 'Rosca Inversa Barra', s: 3, r: '15', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Reverse-Curl.gif' }
-            ]},
-            { id: 'e', day: 'Sex', name: 'E: Peito & Costas (Volume & Pump)', exercises: [
-                { n: 'Supino Inclinado Barra', s: 4, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Barbell-Bench-Press.gif' },
-                { n: 'Puxada Triângulo', s: 4, r: '12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/04/puxada-frente-fechada-pulley-triangulo.gif' },
-                { n: 'Paralelas (Peito Focus)', s: 3, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dip.gif', t: 'Tronco inclinado' },
-                { n: 'Remada Sentada Neutra', s: 3, r: '15', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Cable-Row.gif', t: 'Isometria 2s' }
-            ]},
-            { id: 'f', day: 'Sáb', name: 'F: Ombros, Core & Pump Braços', exercises: [
-                { n: 'Desenvolvimento Arnold', s: 4, r: '10-12', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Arnold-Press.gif' },
-                { n: 'Elevação Lateral Halteres', s: 5, r: '15-20', d: 45, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif', t: 'Rest-Pause na última' },
-                { n: 'Abdominal Roda', s: 4, r: 'Falha', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Ab-Roller.gif' },
-                { n: 'Prancha Isométrica', s: 3, r: '1 min', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Plank.gif' }
+            { id: 'c', day: 'Treino C', name: 'C: Peito Metabólico, Costas & Bíceps (Volume & Densidade)', exercises: [
+                { n: 'Supino Inclinado Barra', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Barbell-Bench-Press.gif', t: 'Cadência 4-0-1-0 (4s de descida controlada e explosão na subida)' },
+                { n: 'Crucifixo Inclinado Halteres', s: 3, r: '10-12', d: 60, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Incline-Fly.gif', t: 'Bi-set com Flexões de Braço no solo até à falha' },
+                { n: 'Puxada Frente Aberta', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif', t: 'Pico de contração de 2s na puxada + Rest-Pause na última série' },
+                { n: 'Remada Curvada Barra', s: 4, r: '8-10', d: 90, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bent-Over-Row.gif', t: 'Drop-Set na última série (reduzir 30% o peso até à falha)' },
+                { n: 'Rosca Direta Barra W', s: 4, r: '10-12', d: 75, g: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Curl.gif', t: 'Método 21s (7 parciais inferiores + 7 parciais superiores + 7 completas)' }
             ]}
         ];
 
+        // PLANO NUTRICIONAL 8.5
         const nutritionData = {
             treino: { kcal: 2400, p: 155, c: 300, g: 65, meals: [
-                { t: "07:00", n: "Ao Acordar & Suple.", i: "Café + 150g Leite desnatado. (Multi + 3g Ômega 3)", m: "30P|40C|12G" },
-                { t: "07:30", n: "Refeição 1 (Pré-T)", i: "Vitamina (Banana, Maçã, Whey, Leite) OU Mingau de Aveia.", m: "25P|50C|5G" },
-                { t: "12:00", n: "Refeição 3 (Almoço)", i: "180g Frango + 100g Arroz + 150g Feijão. Sobremesa: Fruta.", m: "45P|60C|10G" },
-                { t: "19:00", n: "Refeição 5 (Jantar)", i: "200g Carne moída + 200g Brócolis/Couve-flor.", m: "40P|10C|15G" },
-                { t: "21:30", n: "Refeição 6 (Ceia)", i: "220g Ovos mexidos (4 un) OU Iogurte Grego + Granola.", m: "30P|15C|15G" }
+                { t: "07:00", n: "Ao Acordar & Suplementação", m: "Micro-nutrição", i: "Café de sachê (sem açúcar) + 150g Leite desnatado. (Suplementação: 1 dose Multivitamínico + 3g Ômega 3)" },
+                { t: "07:30", n: "Refeição 1 (Pré-Treino)", m: "Glicogénio Máximo", i: "Opção 1: Vitamina (100g banana, 70g maçã, 30g Whey, 200g leite desnatado). Opção 2: Mingau (60g Aveia, 30g Whey, canela)." },
+                { t: "08:15", n: "Pré-Treino Suplementação", m: "Resistência à Fadiga", i: "400mg Cafeína + 5g Beta-Alanina." },
+                { t: "09:00", n: "Durante o Treino", m: "Anti-Catabolismo", i: "15g EAAs dissolvidos em 700ml de água." },
+                { t: "10:45", n: "Refeição 2 (Pós-Treino)", m: "Absorção Rápida", i: "40g Whey Protein + 5g Creatina Monohidratada." },
+                { t: "12:00", n: "Refeição 3 (Almoço)", m: "Reposição de Energia", i: "Opção 1: 180g Frango + 100g Arroz + 150g Feijão. Opção 2: Macarronada (80g Macarrão cru, 150g Carne moída). Sobremesa: 150g Fruta (Abacaxi, Manga, Uva)." },
+                { t: "15:30", n: "Refeição 4 (Lanche)", m: "Balanço Nitrogenado", i: "Opção 1: 130g Iogurte Batavo Nuv + 120g Mamão/Banana. Opção 2: Wrap (2 un Rap10 Integral + 150g Frango desfiado)." },
+                { t: "19:00", n: "Refeição 5 (Jantar)", m: "Controlo Glicémico", i: "Opção 1: 200g Carne moída (paleta) + 200g Brócolis/Couve-flor. Opção 2: 200g Lombo suíno + Salada farta." },
+                { t: "21:30", n: "Refeição 6 (Ceia)", m: "Proteína Lenta", i: "Opção 1: 220g Ovos mexidos (4 un). Opção 2: 170g Iogurte Grego + 15g Granola." }
             ]},
             descanso: { kcal: 2000, p: 155, c: 180, g: 75, meals: [
-                { t: "07:00", n: "Pequeno-almoço", i: "Café 150g leite + 220g Ovos + 50g Pão integral.", m: "35P|30C|15G" },
-                { t: "11:00", n: "Almoço", i: "200g Carne moída + Salada verde livre.", m: "40P|5C|15G" },
-                { t: "18:00", n: "Jantar", i: "200g Frango grelhado + 100g Abacate.", m: "45P|5C|30G" },
-                { t: "21:00", n: "Ceia", i: "170g Iogurte Grego Natural.", m: "20P|10C|5G" }
+                { t: "07:00", n: "Pequeno-almoço", m: "Saciedade & Hormonal", i: "Café com 150g leite + 220g Ovos mexidos + 50g Pão integral. (Suplementação: Multi, Ômega 3, Creatina)" },
+                { t: "11:00", n: "Almoço", m: "Oxidação lipídica", i: "200g Carne moída (paleta) + Salada verde à vontade." },
+                { t: "14:30", n: "Lanche", m: "Gorduras Saudáveis", i: "130g Iogurte Batavo Nuv + 20g Castanhas." },
+                { t: "18:00", n: "Jantar", m: "Controlo Carbo", i: "200g Frango grelhado + 100g Abacate." },
+                { t: "21:00", n: "Ceia", m: "Recuperação Noturna", i: "170g Iogurte Grego Natural." }
             ]}
         };
 
         const initialMeasures = { "Braço E": 35.0, "Braço D": 37.0, "Tórax": 93.0, "Abdome": 82.0, "Cintura": 84.0, "Coxa E": 59.0, "Coxa D": 60.0, "Pant. E": 38.0, "Pant. D": 38.0, "Ombro": 121.0 };
 
-        // --- STATE & COOKIES ---
-        const COOKIE_KEY = 'fabio_gh_v8_3';
+        // --- STATE & STORAGE ---
+        const COOKIE_KEY = 'fabio_v8_5_chest_abc';
         let state = {
             tab: 'treino',
             dietMode: 'treino',
@@ -273,7 +259,7 @@
 
         function load() {
             const match = document.cookie.match(new RegExp('(^| )' + COOKIE_KEY + '=([^;]+)'));
-            if (match) { try { state = { ...state, ...JSON.parse(decodeURIComponent(match[2])) }; } catch(e) { console.error("Erro cookies"); } }
+            if (match) { try { state = { ...state, ...JSON.parse(decodeURIComponent(match[2])) }; } catch(e) {} }
         }
 
         function initUI() {
@@ -329,8 +315,11 @@
             list.innerHTML = current.exercises.map((ex, exIdx) => `
                 <div class="bg-gray-800 rounded-3xl p-5 border border-white/5 shadow-lg">
                     <div class="flex justify-between items-start mb-4">
-                        <div class="flex-1 pr-2"><h4 class="font-bold text-white text-base leading-tight">${ex.n}</h4><p class="text-[10px] text-gray-500 uppercase mt-1 tracking-widest">${ex.s} séries • ${ex.r} reps</p>
-                        ${ex.t ? `<p class="text-[9px] text-amber-400 font-bold uppercase mt-1 italic tracking-tight">★ ${ex.t}</p>` : ''}</div>
+                        <div class="flex-1 pr-2">
+                            <h4 class="font-bold text-white text-base leading-tight">${ex.n}</h4>
+                            <p class="text-[10px] text-gray-500 uppercase mt-1 tracking-widest">${ex.s} séries • ${ex.r} reps</p>
+                            ${ex.t ? `<p class="text-[9px] text-amber-400 font-bold uppercase mt-1.5 italic tracking-tight">★ ${ex.t}</p>` : ''}
+                        </div>
                         <img onclick="showFullImg('${ex.g}')" src="${ex.g}" class="w-14 h-14 rounded-xl object-cover bg-black/20 border border-white/10" onerror="this.src='https://placehold.co/100?text=GIF'">
                     </div>
                     <div class="space-y-2">
@@ -339,12 +328,12 @@
                             const l = state.logs[k] || { done: false, kg: '' };
                             return `
                                 <div class="flex items-center gap-2">
-                                    <div class="bg-gray-900 rounded-2xl flex-1 flex items-center px-4 py-2 border border-white/5">
+                                    <div class="bg-gray-900 rounded-2xl flex-1 flex items-center px-4 py-2.5 border border-white/5">
                                         <span class="text-[9px] font-bold text-gray-600 mr-2 uppercase">SET ${sIdx+1}</span>
                                         <input type="number" onchange="updateKg('${k}', this.value)" value="${l.kg}" placeholder="0" class="bg-transparent w-full text-center text-sm font-bold text-cyan-400 outline-none">
                                         <span class="text-[9px] text-gray-700 ml-1">KG</span>
                                     </div>
-                                    <button onclick="markSet('${k}', ${ex.d})" class="w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${l.done ? 'bg-green-500 text-white shadow-lg' : 'bg-gray-700 text-gray-500'}">
+                                    <button onclick="markSet('${k}', ${ex.d})" class="w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${l.done ? 'bg-green-500 text-white shadow-lg shadow-green-900/20' : 'bg-gray-700 text-gray-500'}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
                                     </button>
                                 </div>
@@ -352,7 +341,7 @@
                         }).join('')}
                     </div>
                 </div>
-            `).join('') + `<button onclick="alert('Boa sessão, Fábio!')" class="w-full bg-cyan-600 py-5 rounded-3xl font-bold text-xs tracking-[0.2em] shadow-xl active:scale-95 transition-all">CONCLUIR TREINO</button>`;
+            `).join('') + `<button onclick="showCustomToast('Sessão guardada! Excelente treino, Fábio!')" class="w-full bg-cyan-600 py-5 rounded-3xl font-bold text-xs tracking-[0.2em] shadow-xl active:scale-95 transition-all">CONCLUIR SESSÃO</button>`;
         }
 
         function renderDiet() {
@@ -393,8 +382,33 @@
         function updateKg(k, v) { if (!state.logs[k]) state.logs[k] = { done: false, kg: '' }; state.logs[k].kg = v; save(); }
         function startTimer(sec) { let left = sec; document.getElementById('timer-modal').classList.add('show'); clearInterval(timerInterval); timerInterval = setInterval(() => { left--; document.getElementById('timer-clock').textContent = `${Math.floor(left / 60)}:${(left % 60).toString().padStart(2, '0')}`; if (left <= 0) skipTimer(); }, 1000); }
         function skipTimer() { clearInterval(timerInterval); document.getElementById('timer-modal').classList.remove('show'); }
-        function addProgressEntry() { const w = document.getElementById('input-weight').value; const f = document.getElementById('input-fat').value; if (w && f) { state.history.push({ d: new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}), w: parseFloat(w), f: parseFloat(f) }); document.getElementById('input-weight').value = ''; document.getElementById('input-fat').value = ''; save(); renderProgress(); alert("Progresso registrado!"); } }
+        
+        function addProgressEntry() { 
+            const w = document.getElementById('input-weight').value; 
+            const f = document.getElementById('input-fat').value; 
+            if (w && f) { 
+                state.history.push({ d: new Date().toLocaleDateString('pt-PT', {day:'2-digit', month:'2-digit'}), w: parseFloat(w), f: parseFloat(f) }); 
+                document.getElementById('input-weight').value = ''; 
+                document.getElementById('input-fat').value = ''; 
+                save(); 
+                renderProgress(); 
+                showCustomToast("Progresso guardado no telemóvel!"); 
+            } 
+        }
+        
         function showFullImg(src) { document.getElementById('full-img-src').src = src; document.getElementById('full-img-modal').classList.add('show'); }
+
+        function showCustomToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-cyan-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-2xl z-[120] text-xs uppercase tracking-widest transition-all duration-300 opacity-0';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('opacity-0'); }, 100);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 2500);
+        }
     </script>
 </body>
 </html>
