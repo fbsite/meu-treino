@@ -84,6 +84,10 @@
         .modal-active {
             display: flex !important;
         }
+        /* Garante que elementos com a classe hidden não sejam exibidos em hipótese alguma */
+        .hidden {
+            display: none !important;
+        }
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -93,27 +97,46 @@
 </head>
 <body class="pb-24 pt-2 min-h-screen flex flex-col justify-between">
 
-    <!-- APP CONTAINER -->
-    <div id="app" class="max-w-md mx-auto w-full px-4 flex-1 flex flex-col">
-        
-        <!-- HEADER -->
-        <header class="py-4 border-b border-gray-800/80 mb-4 flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-black uppercase tracking-wider text-white flex items-center gap-2">
-                    <span class="inline-block w-2.5 h-6 bg-neon rounded-sm"></span>
-                    PROJETO <span class="text-neon">EVOLUÇÃO</span>
-                </h1>
-                <p class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">12 WEEKS — ADVANCED BODY RECOMP</p>
+    <!-- PASSCODE LOCK SCREEN -->
+    <div id="passcode-screen" class="fixed inset-0 bg-brand-darkBg z-50 flex flex-col items-center justify-center p-4">
+        <div class="bg-brand-cardBg border border-brand-cardBorder p-6 rounded-2xl w-full max-w-xs text-center space-y-4 neon-box-shadow">
+            <div class="inline-flex p-3 rounded-full bg-neon/10 text-neon mb-1">
+                <i data-lucide="lock" class="w-8 h-8"></i>
             </div>
-            <button onclick="openConfigModal()" class="p-2 bg-gray-800/80 hover:bg-gray-700 rounded-xl border border-gray-700/50 text-gray-300 transition" aria-label="Configurações">
+            <h2 class="text-base font-black text-white uppercase tracking-wider">Acesso Restrito</h2>
+            <p class="text-xs text-gray-400">Informe o código de acesso para abrir o aplicativo</p>
+            
+            <div class="relative">
+                <input type="password" id="passcode-input" maxlength="4" placeholder="••••" class="w-full bg-gray-900 border border-gray-700 rounded-xl py-3 text-center text-xl font-mono text-neon tracking-widest focus:border-neon outline-none" onkeyup="checkPasscode(event)">
+            </div>
+            
+            <button onclick="validatePasscode()" class="w-full bg-neon hover:bg-neonHover text-black font-extrabold py-3 rounded-xl text-xs transition active:scale-95">
+                ENTRAR
+            </button>
+            <p id="passcode-error" class="text-[11px] text-red-400 font-bold hidden">Código incorreto! Tente novamente.</p>
+        </div>
+    </div>
+
+    <!-- APP CONTAINER -->
+    <div id="app" class="max-w-md mx-auto w-full px-4 flex-1 flex flex-col hidden">
+
+        <!-- HEADER DA APLICAÇÃO -->
+        <header class="flex justify-between items-center py-3 mb-2 border-b border-gray-800">
+            <div>
+                <h1 class="text-base font-black text-white tracking-wide flex items-center gap-1.5">
+                    PROJETO EVOLUÇÃO <span class="text-neon text-xs">⚡</span>
+                </h1>
+                <p class="text-[10px] text-gray-400 font-mono">12 WEEKS — ADVANCED BODY RECOMP</p>
+            </div>
+            <button onclick="openConfigModal()" class="p-2 text-gray-400 hover:text-neon transition">
                 <i data-lucide="settings" class="w-5 h-5"></i>
             </button>
         </header>
 
-        <!-- VIEWS WRAPPER -->
+        <!-- VIEWS / ABAS DO APLICATIVO -->
         <main class="flex-1">
 
-            <!-- 1. DASHBOARD / INÍCIO -->
+            <!-- 1. DASHBOARD INICIAL -->
             <section id="view-dashboard" class="space-y-4">
                 <!-- Banner de Semana Atual -->
                 <div class="bg-brand-cardBg p-5 rounded-2xl border border-brand-cardBorder relative overflow-hidden neon-box-shadow">
@@ -158,17 +181,17 @@
                             <i data-lucide="scale" class="w-4 h-4 text-neon"></i>
                             <span class="text-[10px] font-bold uppercase tracking-wider">Último Peso</span>
                         </div>
-                        <p class="text-xl font-black text-white" id="dash-weight-val">-- kg</p>
-                        <p class="text-[10px] text-gray-500 mt-0.5" id="dash-weight-sub">Confirmar dados</p>
+                        <p class="text-xl font-black text-white" id="dash-weight-val">78.45 kg</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5" id="dash-weight-sub">Confirmado (Bioimpedância)</p>
                     </div>
 
                     <div class="bg-brand-cardBg p-4 rounded-2xl border border-brand-cardBorder">
                         <div class="flex items-center gap-2 mb-1 text-gray-400">
-                            <i data-lucide="ruler" class="w-4 h-4 text-neon"></i>
-                            <span class="text-[10px] font-bold uppercase tracking-wider">Cintura</span>
+                            <i data-lucide="percent" class="w-4 h-4 text-neon"></i>
+                            <span class="text-[10px] font-bold uppercase tracking-wider">Gordura Corporal</span>
                         </div>
-                        <p class="text-xl font-black text-white" id="dash-waist-val">-- cm</p>
-                        <p class="text-[10px] text-gray-500 mt-0.5" id="dash-waist-sub">Medida abdominal</p>
+                        <p class="text-xl font-black text-white" id="dash-waist-val">26.4%</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5" id="dash-waist-sub">Visceral: 14.0 | LBM: 57.7kg</p>
                     </div>
                 </div>
 
@@ -304,26 +327,26 @@
                 <div id="subview-nutri-calc" class="space-y-4">
                     <div class="bg-brand-cardBg p-4 rounded-2xl border border-brand-cardBorder space-y-3">
                         <h3 class="text-xs font-bold text-white uppercase tracking-wider">Calculadora de Recomposição</h3>
-                        <p class="text-xs text-gray-400">Estimativa inicial de macronutrientes baseada no seu perfil.</p>
+                        <p class="text-xs text-gray-400">Estimativa inicial de macronutrientes baseada no seu perfil atualizado.</p>
                         
                         <div class="grid grid-cols-2 gap-3 text-xs">
                             <div>
                                 <label class="text-gray-400 block mb-1">Peso (kg)</label>
-                                <input type="number" id="nutri-weight" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white font-mono" placeholder="74.7">
+                                <input type="number" id="nutri-weight" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white font-mono" value="78.45" placeholder="78.45">
                             </div>
                             <div>
                                 <label class="text-gray-400 block mb-1">Altura (cm)</label>
-                                <input type="number" id="nutri-height" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white font-mono" placeholder="170">
+                                <input type="number" id="nutri-height" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white font-mono" value="170" placeholder="170">
                             </div>
                             <div>
                                 <label class="text-gray-400 block mb-1">Idade</label>
-                                <input type="number" id="nutri-age" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white font-mono" placeholder="30">
+                                <input type="number" id="nutri-age" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white font-mono" value="36" placeholder="36">
                             </div>
                             <div>
                                 <label class="text-gray-400 block mb-1">Nível de Atividade</label>
                                 <select id="nutri-activity" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white text-xs">
                                     <option value="1.375">Moderado (3x/sem)</option>
-                                    <option value="1.55">Ativo (3-5x/sem)</option>
+                                    <option value="1.55" selected>Ativo (3-5x/sem)</option>
                                 </select>
                             </div>
                         </div>
@@ -503,7 +526,7 @@
             </div>
             
             <div class="w-full h-48 bg-gray-900 rounded-xl overflow-hidden border border-gray-800 flex items-center justify-center">
-                <img id="ex-modal-img" src="" alt="Demonstração do Exercício" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x200/111827/FFFFFF?text=Demonstracao+GIF'">
+                <img id="ex-modal-img" src="" alt="Demonstração do Exercício" class="w-full h-full object-cover" onerror="handleImgError(this)">
             </div>
 
             <div class="space-y-2 text-xs">
@@ -512,31 +535,31 @@
                     <p id="ex-modal-guide" class="text-gray-300 leading-relaxed">Controle a fase excêntrica por 2 a 3 segundos.</p>
                 </div>
                 <div>
-                    <span class="text-neon font-bold block uppercase text-[10px]">Substituição Sugerida</span>
-                    <p id="ex-modal-sub" class="text-gray-400">Varie o equipamento mantendo o padrão de movimento.</p>
+                    <span class="text-gray-500 font-bold block uppercase text-[10px]">Substituição Sugerida</span>
+                    <p id="ex-modal-sub" class="text-neon font-medium">Outra variação equivalente.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CONFIGURAÇÕES E PERFIL -->
+    <!-- MODAL CONFIGURAÇÕES -->
     <div id="modal-config" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 justify-center items-center p-4 hidden">
         <div class="bg-brand-cardBg border border-brand-cardBorder w-full max-w-sm rounded-2xl p-5 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white uppercase">Configurações do Programa</h3>
                 <button onclick="closeModal('modal-config')" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-
+            
             <div class="space-y-3 text-xs">
                 <div>
                     <label class="text-gray-400 block mb-1">Semana Atual do Programa</label>
-                    <select id="config-current-week" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white">
-                        <!-- 1 a 12 -->
+                    <select id="config-current-week" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-white font-mono">
+                        <!-- JS Injeta 1-12 -->
                     </select>
                 </div>
-                <div class="pt-2 border-t border-gray-800">
-                    <button onclick="resetAllAppData()" class="w-full bg-red-500/20 text-red-400 border border-red-500/30 font-bold py-2 rounded-xl hover:bg-red-500/30 transition">
-                        RESETAR TODOS OS DADOS
+                <div class="pt-2">
+                    <button onclick="resetAllAppData()" class="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 font-bold py-2.5 rounded-xl text-xs transition">
+                        RESETAR DADOS DO APLICATIVO
                     </button>
                 </div>
             </div>
@@ -545,7 +568,44 @@
 
     <!-- LOGIC SCRIPT -->
     <script>
-        // --- DADOS E ESTRUTURA DO PROGRAMA ---
+        // PASSCODE LOCK SYSTEM
+        const ACCESS_CODE = "1234";
+
+        function validatePasscode() {
+            const input = document.getElementById('passcode-input').value;
+            if (input === ACCESS_CODE) {
+                document.getElementById('passcode-screen').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                sessionStorage.setItem('APP_UNLOCKED', 'true');
+                setupLucideIcons();
+            } else {
+                document.getElementById('passcode-error').classList.remove('hidden');
+                document.getElementById('passcode-input').value = '';
+                document.getElementById('passcode-input').focus();
+            }
+        }
+
+        function checkPasscode(e) {
+            if (e.key === 'Enter') {
+                validatePasscode();
+            }
+        }
+
+        // Check unlock status on start
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('APP_UNLOCKED') === 'true') {
+                document.getElementById('passcode-screen').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+            }
+        });
+
+        // Universal image fallback for failed URLs
+        function handleImgError(img) {
+            img.onerror = null;
+            img.src = 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif';
+        }
+
+        // --- DADOS E ESTRUTURA DO PROGRAMA COM GIFS ANIMADOS DOS EXERCÍCIOS ---
         const PROGRAM_WORKOUTS = [
             {
                 id: 'segunda',
@@ -553,12 +613,12 @@
                 type: 'POWERBUILDING',
                 desc: 'Foco em força, desempenho e densidade muscular.',
                 exercises: [
-                    { name: 'Agachamento livre', sets: 3, reps: '5–8', rest: 180, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Squat.gif', guide: '2-3 min de descanso. Foco em força e estabilidade de tronco.', sub: 'Leg Press pesado ou Agachamento Hack' },
+                    { name: 'Agachamento livre', sets: 3, reps: '5–8', rest: 180, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/BARBELL-SQUAT.gif', guide: '2-3 min de descanso. Foco em força e estabilidade de tronco.', sub: 'Leg Press pesado ou Agachamento Hack' },
                     { name: 'Supino inclinado', sets: 3, reps: '6–8', rest: 150, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Barbell-Bench-Press.gif', guide: 'Explosão na subida, descida controlada. Progressão contínua.', sub: 'Supino Inclinado com Halteres' },
                     { name: 'Remada curvada', sets: 3, reps: '6–8', rest: 150, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bent-Over-Row.gif', guide: 'Mantenha a coluna neutra. Puxe na direção do umbigo.', sub: 'Remada Cavalinho ou Remada Unilateral' },
                     { name: 'Desenvolvimento militar', sets: 2, reps: '8–10', rest: 120, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Overhead-Press.gif', guide: 'Core firme, sem hiperextensão lombar excessiva.', sub: 'Desenvolvimento com Halteres Sentado' },
                     { name: 'Puxada alta', sets: 2, reps: '10–12', rest: 90, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif', guide: 'Puxe o cabo até o peito alto com cotovelos apontados para baixo.', sub: 'Barra Fixa ou Puxada Neutra' },
-                    { name: 'Rosca direta', sets: 2, reps: '10–12', rest: 90, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Curl.gif', guide: 'Evite balanço de tronco.', sub: 'Rosca com Halteres Alternada' },
+                    { name: 'Rosca direta', sets: 2, reps: '10–12', rest: 90, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bicep-Curl.gif', guide: 'Evite balanço de tronco.', sub: 'Rosca com Halteres Alternada' },
                     { name: 'Tríceps corda', sets: 2, reps: '10–12', rest: 90, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Triceps-Pushdown.gif', guide: 'Abra a corda no final da extensão.', sub: 'Tríceps Testa Barra EZ' }
                 ]
             },
@@ -568,10 +628,10 @@
                 type: 'HYPERTROPHY',
                 desc: 'Foco em volume produtivo e controle de movimento.',
                 exercises: [
-                    { name: 'Levantamento romeno', sets: 3, reps: '8–10', rest: 120, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Stiff-Leg-Deadlift.gif', guide: 'Foco na extensão de quadril e alongamento de isquiotibiais.', sub: 'Stiff com Halteres' },
+                    { name: 'Levantamento romeno', sets: 3, reps: '8–10', rest: 120, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Romanian-Deadlift.gif', guide: 'Foco na extensão de quadril e alongamento de isquiotibiais.', sub: 'Stiff com Halteres' },
                     { name: 'Leg press', sets: 3, reps: '10–12', rest: 120, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/03/Leg-Press.gif', guide: 'Amplitude completa sem retroversão pélvica.', sub: 'Agachamento Hack' },
                     { name: 'Supino com halteres', sets: 3, reps: '8–12', rest: 90, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Bench-Press.gif', guide: 'Maior amplitude de movimento no peitoral.', sub: 'Supino Reto Barra' },
-                    { name: 'Puxada neutra', sets: 3, reps: '10–12', rest: 90, img: 'https://www.mundoboaforma.com.br/wp-content/uploads/2021/04/puxada-frente-fechada-pulley-triangulo.gif', guide: 'Foco no grande dorsal.', sub: 'Puxada Pronada Aberta' },
+                    { name: 'Puxada neutra', sets: 3, reps: '10–12', rest: 90, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Underhand-Lat-Pulldown.gif', guide: 'Foco no grande dorsal.', sub: 'Puxada Pronada Aberta' },
                     { name: 'Mesa flexora', sets: 2, reps: '12–15', rest: 90, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lying-Leg-Curl.gif', guide: 'Pico de contração de 1 seg no topo.', sub: 'Cadeira Flexora' },
                     { name: 'Elevação lateral', sets: 3, reps: '12–20', rest: 60, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif', guide: 'Eleve o peso no plano da escápula.', sub: 'Elevação Lateral no Cabo' },
                     { name: 'Panturrilha em pé', sets: 3, reps: '12–15', rest: 60, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Standing-Calf-Raise.gif', guide: 'Pausa de 1 seg na extensão máxima.', sub: 'Panturrilha no Leg Press' },
@@ -585,13 +645,13 @@
                 desc: 'Foco em isolamento e técnicas de intensidade selecionadas.',
                 exercises: [
                     { name: 'Hack squat', sets: 3, reps: '8–12', rest: 120, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Hack-Squat.gif', guide: 'Execução contínua sem pausar no topo.', sub: 'Agachamento Pendulum ou Leg Press' },
-                    { name: 'Cadeira extensora', sets: 2, reps: '12–15', rest: 60, img: 'https://www.mundoboaforma.com.br/wp-content/uploads/2020/12/cadeira-extensora.gif', guide: 'Aplicar Drop Set se estiver na Fase 4.', sub: 'Passada / Afundo com Halteres' },
+                    { name: 'Cadeira extensora', sets: 2, reps: '12–15', rest: 60, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/LEG-EXTENSION.gif', guide: 'Aplicar Drop Set se estiver na Fase 4.', sub: 'Passada / Afundo com Halteres' },
                     { name: 'Supino máquina', sets: 3, reps: '10–12', rest: 90, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lever-Chest-Press.gif', guide: 'Segurança para ir próximo da falha.', sub: 'Crucifixo Reto com Halteres' },
                     { name: 'Remada baixa', sets: 3, reps: '10–12', rest: 90, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Cable-Row.gif', guide: 'Comprimir as escápulas no final da puxada.', sub: 'Remada Unilateral com Halter' },
                     { name: 'Crucifixo no cabo', sets: 2, reps: '12–15', rest: 60, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Crossover.gif', guide: 'Manter tensão constante no peitoral.', sub: 'Pec Deck / Voador' },
-                    { name: 'Elevação lateral', sets: 2, reps: '15–20', rest: 60, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif', guide: 'Trabalhar até a queimação metabólica.', sub: 'Elevação Lateral no Cabo' },
-                    { name: 'Rosca Scott', sets: 2, reps: '10–12', rest: 60, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Preacher-Curl.gif', guide: 'Isolamento estrito dos bíceps.', sub: 'Rosca Concentrada' },
-                    { name: 'Tríceps francês', sets: 2, reps: '10–12', rest: 60, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-One-Arm-Triceps-Extension.gif', guide: 'Foco no alongamento da cabeça longa do tríceps.', sub: 'Tríceps Coice no Cabo' }
+                    { name: 'Elevação lateral', sets: 2, reps: '15–20', rest: 60, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Lateral-Raise.gif', guide: 'Trabalhar até a queimação metabólica.', sub: 'Elevação Lateral no Cabo' },
+                    { name: 'Rosca Scott', sets: 2, reps: '10–12', rest: 60, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/EZ-Bar-Preacher-Curl.gif', guide: 'Isolamento estrito dos bíceps.', sub: 'Rosca Concentrada' },
+                    { name: 'Tríceps francês', sets: 2, reps: '10–12', rest: 60, img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Triceps-Extension.gif', guide: 'Foco no alongamento da cabeça longa do tríceps.', sub: 'Tríceps Coice no Cabo' }
                 ]
             }
         ];
@@ -610,9 +670,9 @@
             currentWeek: 1,
             selectedWorkoutIndex: 0,
             measurements: [
-                { week: 1, date: 'Início', weight: 74.7, waist: 82.0 }
+                { week: 1, date: 'Atual', weight: 78.45, waist: 88.0, fatPercent: 26.4, visceral: 14.0, lbm: 57.73 }
             ],
-            workoutLogs: {}, // key: week_day_exIndex -> array of set objects
+            workoutLogs: {},
             cardioLogs: [],
             activeWorkout: null,
             timerInterval: null,
@@ -652,12 +712,16 @@
             localStorage.setItem('PROJETO_EVOLUCAO_STATE', JSON.stringify(appState));
         }
 
-        // --- NAVIGATIO & VIEWS ---
+        // --- NAVIGATION & VIEWS (CORRIGIDA) ---
         function switchView(viewName) {
             const views = ['dashboard', 'treino', 'periodizacao', 'diario', 'evolucao', 'nutricao'];
+            
+            // Oculta todas as seções e remove estilo ativo das abas
             views.forEach(v => {
                 const el = document.getElementById(`view-${v}`);
-                if (el) el.classList.add('hidden');
+                if (el) {
+                    el.classList.add('hidden');
+                }
                 
                 const navBtn = document.getElementById(`nav-${v}`);
                 if (navBtn) {
@@ -666,15 +730,23 @@
                 }
             });
 
+            // Exibe estritamente a seção solicitada
             const targetView = document.getElementById(`view-${viewName}`);
-            if (targetView) targetView.classList.remove('hidden');
+            if (targetView) {
+                targetView.classList.remove('hidden');
+            }
 
+            // Ativa o ícone da aba selecionada
             const activeNav = document.getElementById(`nav-${viewName}`);
             if (activeNav) {
                 activeNav.classList.add('text-neon');
                 activeNav.classList.remove('text-gray-500');
             }
 
+            // Rola a página para o topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Inicializa gráficos/dados específicos da view aberta
             if (viewName === 'dashboard') renderDashboard();
             if (viewName === 'evolucao') renderEvolutionView();
             setupLucideIcons();
@@ -795,7 +867,7 @@
                     ${workout.exercises.map((ex, exIdx) => `
                         <div class="bg-gray-900/80 p-3 rounded-xl border border-gray-800 flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <img src="${ex.img}" alt="${ex.name}" class="w-12 h-12 rounded-lg object-cover bg-gray-800 border border-gray-700 cursor-pointer" onclick="openExerciseDetailModal('${workout.id}', ${exIdx})">
+                                <img src="${ex.img}" alt="${ex.name}" class="w-12 h-12 rounded-lg object-cover bg-gray-800 border border-gray-700 cursor-pointer" onclick="openExerciseDetailModal('${workout.id}', ${exIdx})" onerror="handleImgError(this)">
                                 <div>
                                     <h4 class="text-xs font-bold text-white">${ex.name}</h4>
                                     <p class="text-[10px] text-gray-400">${ex.sets} Séries × ${ex.reps} reps</p>
@@ -1048,19 +1120,19 @@
         }
 
         function calculateMacros() {
-            const weight = parseFloat(document.getElementById('nutri-weight').value) || 74.7;
+            const weight = parseFloat(document.getElementById('nutri-weight').value) || 78.45;
             const height = parseFloat(document.getElementById('nutri-height').value) || 170;
-            const age = parseFloat(document.getElementById('nutri-age').value) || 30;
+            const age = parseFloat(document.getElementById('nutri-age').value) || 36;
             const activity = parseFloat(document.getElementById('nutri-activity').value) || 1.375;
 
-            // Mifflin-St Jeor (Homem de referência)
-            const bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+            // BMR conhecido da bioimpedância (1630 kcal) ou Mifflin-St Jeor
+            const bmr = 1630;
             const tdee = Math.round(bmr * activity);
 
-            // Recomposição (Manutenção / leve déficit)
-            const targetKcal = Math.round(tdee * 0.95);
-            const protGrams = Math.round(weight * 2.0);
-            const fatGrams = Math.round(weight * 0.75);
+            // Recomposição corporal para 26.4% de BF (leve déficit estratégico)
+            const targetKcal = Math.round(tdee * 0.88); // ~2000-2100 kcal
+            const protGrams = Math.round(weight * 2.0); // 157g proteína
+            const fatGrams = Math.round(weight * 0.75);  // ~58g gordura
             const carbGrams = Math.round((targetKcal - (protGrams * 4) - (fatGrams * 9)) / 4);
 
             document.getElementById('res-kcal').textContent = targetKcal;
